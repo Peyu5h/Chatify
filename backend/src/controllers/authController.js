@@ -1,4 +1,7 @@
-import { createUser } from "../services/authService.js";
+import createHttpError from "http-errors";
+import { createUser, signUser } from "../services/authService.js";
+import { generateToken, verifyToken } from "../services/tokenServices.js";
+import findUser from "../services/userService.js";
 
 export const register = async (req, res, next) => {
   try {
@@ -10,7 +13,38 @@ export const register = async (req, res, next) => {
       status,
       password,
     });
-    res.json(newUser);
+    const expiresInAccessToken = 24 * 60 * 60; // 1 day
+    const expiresInRefreshToken = 30 * 24 * 60 * 60; // 30 days
+
+    const access_token = await generateToken(
+      { userid: newUser._id },
+      expiresInAccessToken,
+      process.env.ACCESS_TOKEN_SECRET
+    );
+
+    const refreshToken = await generateToken(
+      { userid: newUser._id },
+      expiresInRefreshToken,
+      process.env.REFRESH_TOKEN_SECRET
+    );
+
+    res.cookie("refreshToken", refreshToken, {
+      httpOnly: true,
+      path: "/api/v1/auth",
+      maxAge: expiresInRefreshToken * 1000,
+    });
+
+    res.json({
+      message: "User created successfully",
+      access_token,
+      user: {
+        _id: newUser._id,
+        name: newUser.name,
+        email: newUser.email,
+        picture: newUser.picture,
+        status: newUser.status,
+      },
+    });
   } catch (error) {
     next(error);
   }
@@ -18,7 +52,41 @@ export const register = async (req, res, next) => {
 
 export const login = async (req, res, next) => {
   try {
-    res.send("This is the login route");
+    const { email, password } = req.body;
+    const user = await signUser({ email, password });
+
+    const expiresInAccessToken = 24 * 60 * 60; // 1 day
+    const expiresInRefreshToken = 30 * 24 * 60 * 60; // 30 days
+
+    const access_token = await generateToken(
+      { userid: user._id },
+      expiresInAccessToken,
+      process.env.ACCESS_TOKEN_SECRET
+    );
+
+    const refreshToken = await generateToken(
+      { userid: user._id },
+      expiresInRefreshToken,
+      process.env.REFRESH_TOKEN_SECRET
+    );
+
+    res.cookie("refreshToken", refreshToken, {
+      httpOnly: true,
+      path: "/api/v1/auth",
+      maxAge: expiresInRefreshToken * 1000,
+    });
+
+    res.json({
+      message: "Logged in successfully",
+      access_token,
+      user: {
+        _id: user._id,
+        name: user.name,
+        email: user.email,
+        picture: user.picture,
+        status: user.status,
+      },
+    });
   } catch (error) {
     next(error);
   }
@@ -26,7 +94,8 @@ export const login = async (req, res, next) => {
 
 export const logout = async (req, res, next) => {
   try {
-    res.send("This is the logout route");
+    res.clearCookie("refreshToken", { path: "/api/v1/auth" });
+    res.json({ message: "Logged out successfully" });
   } catch (error) {
     next(error);
   }
@@ -34,7 +103,31 @@ export const logout = async (req, res, next) => {
 
 export const refreshToken = async (req, res, next) => {
   try {
-    res.send("This is the token route");
+    const refresh_token = req.cookies.refreshToken;
+    if (!refresh_token) {
+      throw createHttpError.Unauthorized("Please login first");
+    }
+    const check = await verifyToken(
+      refresh_token,
+      process.env.REFRESH_TOKEN_SECRET
+    );
+
+    const user = await findUser(check.userid);
+    const access_token = await generateToken(
+      { userid: user._id },
+      24 * 60 * 60,
+      process.env.ACCESS_TOKEN_SECRET
+    );
+    res.json({
+      access_token,
+      user: {
+        _id: user._id,
+        name: user.name,
+        email: user.email,
+        picture: user.picture,
+        status: user.status,
+      },
+    });
   } catch (error) {
     next(error);
   }

@@ -9,7 +9,9 @@ console.log("mode = " + process.env.NODE_ENV);
 
 // ============== MongoDB Connection ============== //
 mongoose
-  .connect(mongoUrl)
+  .connect(mongoUrl, {
+    autoIndex: false,
+  })
   .then(() => {
     logger.info("Connected to MongoDB");
   })
