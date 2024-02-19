@@ -31,7 +31,6 @@ const app = express();
   app.use(cors()); //enable cors
 }
 // ============================================== //
-
 app.use("/api/v1", routes);
 
 //=============== error handling  ===============//

@@ -5,26 +5,32 @@ export default {
   theme: {
     extend: {
       colors: {
-        dark_bg_1: "#111B21",
-        dark_bg_2: "#202C33",
-        dark_bg_3: "#182229",
-        dark_bg_4: "#222E35",
-        dark_border_1: "#222D34",
-        dark_border_2: "#313D45",
-        dark_hover_1: "#2A3942",
-        dark_svg_1: "#AEBAC1",
-        dark_svg_2: "#8696A0",
-        blue_1: "#53BDEB",
-        blue_2: "#3E7B96",
-        dark_text_1: "#E9EDEF",
-        dark_text_2: "#8696A0",
-        dark_text_3: "#8696a0",
-        dark_text_4: "#D1D6D8",
-        dark_text_5: "#99BEB7",
-        dark_scrollbar: "#374045",
-        green_1: "#00A884",
-        green_2: "#008069",
-        green_3: "#005C4B",
+        dark_bg_1: "#0D1117", // Darker Background
+        dark_bg_2: "#1B1F24", // Background
+        dark_bg_3: "#141A1F", // Slightly Darker Background
+        dark_bg_4: "#1F2A36", // Darker Shade
+        dark_border_1: "#262E39", // Darker Border
+        dark_border_2: "#334154", // Darker Border
+        dark_hover_1: "#3E4C5F", // Darker Hover
+        dark_svg_1: "#B8C2D1", // SVG icons
+        dark_svg_2: "#A1AFBF", // SVG icons
+        blue_1: "#3498DB", // Primary Color (Blue)
+        blue_2: "#2980B9", // Darker Shade
+        dark_text_1: "#ECF0F3", // Lighter Text
+        dark_text_2: "#A1AFBF", // Darker Text
+        dark_text_3: "#A1AFBF", // Darker Text
+        dark_text_4: "#D7DBDE", // Lighter Text
+        dark_text_5: "#B4C1CC", // Lighter Text
+        dark_scrollbar: "#344051", // Scrollbar color
+        blue_3: "#0088CC", // Accent Blue
+        blue_4: "#006699", // Accent Blue
+        blue_5: "#004C66", // Accent Blue
+        warning: "#F59E0B", // Warning Color
+        success: "#47B859", // Success Color
+        error: "#FF4C4C", // Error Color
+      },
+      fontFamily: {
+        sans: ["Roboto", "sans-serif"],
       },
     },
   },
