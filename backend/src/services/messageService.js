@@ -27,3 +27,16 @@ export const populatedMessage = async (id) => {
   }
   return msg;
 };
+
+export const getConvoMessages = async (convo_id) => {
+  const messages = await MessageModel.find({ conversation: convo_id })
+    .populate("sender", "name picture email status")
+    .populate({
+      path: "conversation",
+      model: "ConversationModel",
+    });
+  // .populate("conversation");
+  if (!messages) throw createHttpError.BadRequest("No message found");
+
+  return messages;
+};

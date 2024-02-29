@@ -1,6 +1,10 @@
 import createHttpError from "http-errors";
 import logger from "../configs/logger.js";
-import { createMessage, populatedMessage } from "../services/messageService.js";
+import {
+  createMessage,
+  getConvoMessages,
+  populatedMessage,
+} from "../services/messageService.js";
 import { updatedLatestMessgae } from "../services/conversationService.js";
 
 export const sendMessage = async (req, res, next) => {
@@ -31,7 +35,14 @@ export const sendMessage = async (req, res, next) => {
 
 export const getMessages = async (req, res, next) => {
   try {
-    res.send("get message");
+    const convo_id = req.params.convo_id;
+    if (!convo_id) {
+      logger.error("Convo_id is required");
+      return res.status(400).json({ error: "Convo_id is required" });
+    }
+
+    const messages = await getConvoMessages(convo_id);
+    res.json(messages);
   } catch (error) {
     next(error);
   }
