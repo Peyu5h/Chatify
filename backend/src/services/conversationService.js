@@ -64,3 +64,12 @@ export const getUserConversation = async (user_id) => {
 
   return populatedConvos;
 };
+
+export const updatedLatestMessgae = async (convo_id, message) => {
+  const updatedConvo = await conversationsModel.findByIdAndUpdate(convo_id, {
+    latestMessage: message,
+  });
+  if (!updatedConvo)
+    throw createHttpError.BadRequest("Latest message not updated");
+  return updatedConvo;
+};

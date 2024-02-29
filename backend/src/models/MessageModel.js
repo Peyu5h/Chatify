@@ -1,11 +1,9 @@
 import mongoose from "mongoose";
 
-import { ObjectId } from "mongoose.Schema.Types";
-
 const messageSchema = new mongoose.Schema(
   {
     sender: {
-      type: ObjectId,
+      type: mongoose.Schema.Types.ObjectId,
       ref: "UserModel",
     },
     message: {
@@ -13,7 +11,7 @@ const messageSchema = new mongoose.Schema(
       required: true,
     },
     conversation: {
-      type: ObjectId,
+      type: mongoose.Schema.Types.ObjectId,
       ref: "conversationsModel",
     },
     files: [],
@@ -26,3 +24,5 @@ const messageSchema = new mongoose.Schema(
 
 const MessageModel =
   mongoose.model.MessageModel || mongoose.model("MessageModel", messageSchema);
+
+export default MessageModel;
