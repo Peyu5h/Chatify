@@ -14,9 +14,8 @@ const doConversationExist = async (sender_id, receiver_id) => {
     .populate("users", "-password")
     .populate("latestMessage");
 
-  if (!convos || convos.length === 0) {
-    // Check for empty array
-    throw createHttpError.BadRequest("Conversation not found");
+  if (!convos) {
+    throw createHttpError.BadRequest("No conversation found");
   }
 
   convos = await UserModel.populate(convos, {
@@ -24,7 +23,26 @@ const doConversationExist = async (sender_id, receiver_id) => {
     select: "name email picture status",
   });
 
-  return convos;
+  return convos[0];
 };
 
 export { doConversationExist };
+
+export const createConversation = async (convoData) => {
+  const newConvo = await conversationsModel.create(convoData);
+  if (!newConvo) throw createHttpError.BadRequest("Conversation not created");
+  return newConvo;
+};
+
+export const populatedConversation = async (
+  id,
+  fieldToPopulate,
+  fieldToRemove
+) => {
+  const populatedConvo = await conversationsModel
+    .findOne({ _id: id })
+    .populate(fieldToPopulate, fieldToRemove);
+  if (!populatedConvo)
+    throw createHttpError.BadRequest("Conversation not found");
+  return populatedConvo;
+};

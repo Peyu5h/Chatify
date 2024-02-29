@@ -1,9 +1,15 @@
 import createHttpError from "http-errors";
-import { doConversationExist } from "../services/conversationService.js";
+import {
+  createConversation,
+  doConversationExist,
+  populatedConversation,
+} from "../services/conversationService.js";
+import findUser from "../services/userService.js";
+import { populate } from "dotenv";
 
 export const conversationController = async (req, res, next) => {
   try {
-    const sender_id = req.user.userId;
+    const sender_id = req.user.userid;
     const { receiver_id } = req.body;
 
     if (!receiver_id) {
@@ -15,9 +21,24 @@ export const conversationController = async (req, res, next) => {
       receiver_id
     );
     if (existed_conversation) {
-      res.json({ existed_conversation });
+      res.json(existed_conversation);
     } else {
-      res.json({ message: "No conversation found" });
+      let receiver_user = await findUser(receiver_id);
+
+      let convoData = {
+        name: receiver_user.name,
+        isGroup: false,
+        users: [sender_id, receiver_id],
+      };
+
+      const newConvo = await createConversation(convoData);
+      const populatedConvo = await populatedConversation(
+        newConvo._id,
+        "users",
+        "-password"
+      );
+
+      res.status(200).json(populatedConvo);
     }
   } catch (error) {
     next(error);
