@@ -46,3 +46,21 @@ export const populatedConversation = async (
     throw createHttpError.BadRequest("Conversation not found");
   return populatedConvo;
 };
+
+export const getUserConversation = async (user_id) => {
+  const convos = await conversationsModel
+    .find({ users: { $elemMatch: { $eq: user_id } } })
+    .populate("users", "-password")
+    .populate("admin", "-password")
+    .populate("latestMessage")
+    .sort({ updatedAt: -1 });
+
+  if (!convos) throw createHttpError.BadRequest("No conversation found");
+
+  const populatedConvos = await UserModel.populate(convos, {
+    path: "latestMessage.sender",
+    select: "name email picture status",
+  });
+
+  return populatedConvos;
+};

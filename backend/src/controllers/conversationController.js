@@ -2,10 +2,10 @@ import createHttpError from "http-errors";
 import {
   createConversation,
   doConversationExist,
+  getUserConversation,
   populatedConversation,
 } from "../services/conversationService.js";
 import findUser from "../services/userService.js";
-import { populate } from "dotenv";
 
 export const conversationController = async (req, res, next) => {
   try {
@@ -40,6 +40,16 @@ export const conversationController = async (req, res, next) => {
 
       res.status(200).json(populatedConvo);
     }
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const getConversationsController = async (req, res, next) => {
+  try {
+    const user_id = req.user.userid;
+    const conversations = await getUserConversation(user_id);
+    res.status(200).json(conversations);
   } catch (error) {
     next(error);
   }
