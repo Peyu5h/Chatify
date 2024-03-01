@@ -3,6 +3,15 @@ export default {
   content: ["./index.html", "./src/**/*.{js,ts,jsx,tsx}"],
   darkMode: "class",
   theme: {
+    screens: {
+      xs: "418px",
+      xss: "496px",
+      sm: "576px",
+      md: "768px",
+      lg: "984px",
+      lgg: "1093px",
+      xl: "1440px",
+    },
     extend: {
       colors: {
         dark_bg_1: "#0D1117", // Darker Background
