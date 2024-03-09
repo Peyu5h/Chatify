@@ -1,11 +1,13 @@
 import React from "react";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import CommunityIcon from "../../svg/Community";
 import ChatIcon from "../../svg/ChatIcon";
 import DotsIcon from "../../svg/Dots";
+import { logout } from "../../rtk/userSlice";
 
 const Header = () => {
   const user = useSelector((state) => state.user.user.user);
+  const dispatch = useDispatch();
   return (
     <div>
       <div className="h-[50px] bg-dark_bg_2 flex items-center p-4">
@@ -27,7 +29,10 @@ const Header = () => {
             <div className="commumnity cursor-pointer">
               <ChatIcon className="fill-dark_svg_1" />
             </div>
-            <div className="commumnity cursor-pointer">
+            <div
+              onClick={() => dispatch(logout())}
+              className="commumnity cursor-pointer"
+            >
               <DotsIcon className="fill-dark_svg_1" />
             </div>
           </div>

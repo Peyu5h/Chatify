@@ -3,7 +3,6 @@ import Convo from "./Convo";
 
 const Conversations = () => {
   const conversation = useSelector((state) => state.chat.conversation);
-  console.log(conversation);
   return (
     <div>
       <div className=" converSATIONS scrollbar text-white">
