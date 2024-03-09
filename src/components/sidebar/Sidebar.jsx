@@ -1,7 +1,8 @@
 import React, { useState } from "react";
 import Header from "./Header";
-import Notifications from "./search/Search";
-import Search from "./search/Search";
+import Notifications from "./Search";
+import Search from "./Search";
+import Conversations from "./Conversations";
 
 const Sidebar = () => {
   const [searchResults, setSearchResults] = useState([]);
@@ -11,6 +12,7 @@ const Sidebar = () => {
         <div className="header">
           <Header />
           <Search searchLength={searchResults.length} />
+          <Conversations />
         </div>
       </div>
     </div>

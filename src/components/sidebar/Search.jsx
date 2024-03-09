@@ -1,8 +1,8 @@
 import { useState } from "react";
 
-import ReturnIcon from "../../../svg/Return";
-import SearchIcon from "../../../svg/Search";
-import FilterIcon from "../../../svg/FilterIcon";
+import ReturnIcon from "../../svg/Return";
+import SearchIcon from "../../svg/Search";
+import FilterIcon from "../../svg/FilterIcon";
 const Search = ({ searchLength }) => {
   const [show, setShow] = useState(false);
   const [search, setSearch] = useState("");

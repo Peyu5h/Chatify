@@ -12,7 +12,7 @@ const HomePage = () => {
     if (user?.token) {
       dispatch(getConversations(user.token));
     }
-  }, []);
+  });
   return (
     <div>
       <div className="h-screen bg-dark_bg_1 text-dark_text_1  grid grid-rows-1 grid-cols-7">

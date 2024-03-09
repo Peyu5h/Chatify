@@ -6,7 +6,7 @@ const initialState = {
 
   user: {
     id: "",
-    name: "Hellllow",
+    name: "",
     email: "",
     picture: "",
     status: "",
