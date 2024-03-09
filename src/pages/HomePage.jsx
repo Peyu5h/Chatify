@@ -4,7 +4,7 @@ import Sidebar from "../components/sidebar/Sidebar";
 const HomePage = () => {
   return (
     <div>
-      <div className="h-screen bg-dark_bg_1 text-dark_text_1 p-8 grid grid-rows-1 grid-cols-7">
+      <div className="h-screen bg-dark_bg_1 text-dark_text_1  grid grid-rows-1 grid-cols-7">
         <div className="col-span-3 lg:col-span-2">
           <Sidebar />
         </div>
