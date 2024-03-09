@@ -3,8 +3,6 @@ const Conversation_URL = `${
   import.meta.env.VITE_CONVERSATION_URL
 }/conversations`;
 
-console.log(Conversation_URL);
-
 const initialState = {
   status: "",
   error: "",

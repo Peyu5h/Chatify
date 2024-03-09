@@ -6,6 +6,10 @@ export const dateHandler = (date) => {
   let time = momentDate.fromNow(true);
   let dateByHourAndMin = momentDate.format("HH:mm");
 
+  const convertTo12HourFormat = (time) => {
+    return moment(time, "HH:mm").format("h:mm A");
+  };
+
   const getDay = () => {
     let days = time.split(" ")[0];
     if (Number(days) < 8) {
@@ -29,7 +33,7 @@ export const dateHandler = (date) => {
   }
 
   if (time.search("hour") !== -1) {
-    return dateByHourAndMin;
+    return convertTo12HourFormat(dateByHourAndMin);
   }
 
   if (time == "a day") {
