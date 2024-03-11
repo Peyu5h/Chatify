@@ -1,5 +1,3 @@
-import UserModel from "../models/UserModel.js";
-import conversationsModel from "../models/ConversationModel.js";
 import MessageModel from "../models/MessageModel.js";
 import createHttpError from "http-errors";
 

@@ -11,8 +11,8 @@ const SearchResults = ({ searchLength, searchResults }) => {
 
         <ul>
           {searchLength > 0 &&
-            searchResults.map((user) => (
-              <AllUsers key={user._id} user={user} />
+            searchResults.map((convo) => (
+              <AllUsers key={convo._id} convo={convo} />
             ))}
         </ul>
       </div>

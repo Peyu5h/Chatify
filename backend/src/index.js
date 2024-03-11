@@ -9,9 +9,7 @@ console.log("mode = " + process.env.NODE_ENV);
 
 // ============== MongoDB Connection ============== //
 mongoose
-  .connect(mongoUrl, {
-    autoIndex: false,
-  })
+  .connect(mongoUrl)
   .then(() => {
     logger.info("Connected to MongoDB");
   })
@@ -20,7 +18,7 @@ mongoose
   });
 
 if (process.env.NODE_ENV !== "production") {
-  mongoose.set("debug", true);
+  mongoose.set("debug", false);
 }
 // ================================================= //
 

@@ -1,6 +1,6 @@
 import React from "react";
 
-const ChatScreen = () => {
+const ChatHome = () => {
   return (
     <div className="flex h-screen w-full items-center justify-center">
       <div className="">
@@ -24,4 +24,4 @@ const ChatScreen = () => {
   );
 };
 
-export default ChatScreen;
+export default ChatHome;
