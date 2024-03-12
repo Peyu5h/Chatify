@@ -1,8 +1,8 @@
 function EmojiIcon({ className }) {
   return (
     <svg
-      width="28"
-      height="28"
+      width="24"
+      height="24"
       x="0"
       y="0"
       className="ekdr8vow dhq51u3o"

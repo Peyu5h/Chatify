@@ -3,6 +3,7 @@ import ChatPageHeader from "./Header/ChatPageHeader";
 import ChatMessages from "./ChatMessages/ChatMessages";
 import { useEffect } from "react";
 import { getConvoMessages } from "../../rtk/chatSlice";
+import ChatInput from "./ChatInput/ChatInput";
 
 const ChatPage = () => {
   const { user } = useSelector((state) => state.user.user);
@@ -28,9 +29,10 @@ const ChatPage = () => {
       <div className="absolute inset-0 bg-chetPattern opacity-[0.07] bg-fill"></div>
       {/* <div className="absolute inset-0 bg-ChatPattern opacity-20 bg-cover"></div> */}
 
-      <div className="relative z-10">
+      <div className="relative h-screen z-10">
         <ChatPageHeader />
         <ChatMessages />
+        <ChatInput />
       </div>
     </div>
   );

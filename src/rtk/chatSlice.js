@@ -71,13 +71,39 @@ export const getConvoMessages = createAsyncThunk(
   async (values, { rejectWithValue }) => {
     const { token, convo_id } = values;
     try {
-      console.log(JSON.stringify({ convo_id }));
       const response = await fetch(`${Message_URL}/${convo_id}`, {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error.message);
+      }
+
+      const data = await response.json();
+      return data;
+    } catch (error) {
+      return rejectWithValue(error.response.data.message);
+    }
+  }
+);
+
+export const sendMessage = createAsyncThunk(
+  "message/send",
+  async (values, { rejectWithValue }) => {
+    const { token, message, files, convo_id } = values;
+    try {
+      const response = await fetch(`${Message_URL}`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ message, files, convo_id }),
       });
 
       if (!response.ok) {
@@ -133,6 +159,17 @@ export const chatSlice = createSlice({
         state.messages = action.payload;
       })
       .addCase(getConvoMessages.rejected, (state, action) => {
+        state.status = "failed";
+        state.error = action.payload;
+      })
+      .addCase(sendMessage.pending, (state) => {
+        state.status = "loading";
+      })
+      .addCase(sendMessage.fulfilled, (state, action) => {
+        state.status = "succeeded";
+        state.messages = [...state.messages, action.payload];
+      })
+      .addCase(sendMessage.rejected, (state, action) => {
         state.status = "failed";
         state.error = action.payload;
       });
