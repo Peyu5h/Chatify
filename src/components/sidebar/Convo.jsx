@@ -1,6 +1,8 @@
 import { useDispatch, useSelector } from "react-redux";
 import { dateHandler } from "../../utils/date";
 import { openCreateConversation } from "../../rtk/chatSlice";
+import { useAtom } from "jotai";
+import { searchAtom } from "../../atom/atom";
 
 const Convo = ({ convo }) => {
   const dispatch = useDispatch();
@@ -17,8 +19,8 @@ const Convo = ({ convo }) => {
     receiver_id: getConversationId(user, convo.users),
   };
 
-  const openConversation = () => {
-    dispatch(openCreateConversation(values));
+  const openConversation = async () => {
+    await dispatch(openCreateConversation(values));
   };
   return (
     <div onClick={() => openConversation()}>

@@ -7,7 +7,7 @@ const ChatMessages = () => {
   const { user } = useSelector((state) => state.user.user);
   return (
     <div>
-      <div className="scrollbar overflow-auto py-2 px-[6%]">
+      <div className="scrollbar overflow-scroll h-[88vh] py-2 px-[6%]">
         {messages.map((message) => (
           <Messages
             messages={message}

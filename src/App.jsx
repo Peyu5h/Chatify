@@ -9,7 +9,7 @@ const App = () => {
   const { user } = useSelector((state) => state.user);
 
   return (
-    <div className="selection:text-white selection:bg-gray-600">
+    <div className="selection:text-white selection:bg-gray-600 overflow-hidden">
       <Routes>
         <Route
           path="/"

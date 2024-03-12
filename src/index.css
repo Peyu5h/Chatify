@@ -40,6 +40,45 @@
   border-bottom-right-radius: 3px;
 }
 
+/* emoji picker */
+
+.epr-dark-theme {
+  background: #1f2a36 !important;
+}
+
+.epr-emoji-category-label {
+  background: transparent !important;
+}
+.epr_-r9nwrc {
+  background-color: rgb(51 65 84 / 0.8) !important;
+  border: none !important;
+}
+
+.openAnimation {
+  animation: openAs 0.1s forwards;
+}
+@keyframes openAs {
+  0% {
+    transform: translateY(60px);
+  }
+}
+
+.epr_c90x4z {
+  display: none !important;
+}
+
+.epr-body::-webkit-scrollbar {
+  width: 6px;
+}
+.epr-body::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.epr-body::-webkit-scrollbar-thumb {
+  background-color: #444e54;
+  border-radius: 5px;
+}
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
