@@ -10,10 +10,14 @@ import { sendMessage } from "../../../rtk/chatSlice";
 import { ClipLoader } from "react-spinners";
 import EmojiPickerApp from "./EmojiPicker";
 import { useRef, useState } from "react";
+import AttachmentMenu from "./AttachmentMenu";
+import { IoIosAdd } from "react-icons/io";
 
 const ChatInput = () => {
   const [message, setMessage] = useAtom(messageAtom);
-  const [isopen, setisopen] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [isEmojiOpen, setisEmojiOpen] = useState(false);
+  const [isAttachmentOpen, setisAttachmentOpen] = useState(false);
   const { activeConversation, status } = useSelector((state) => state.chat);
   const { user } = useSelector((state) => state.user.user);
   const { token } = user;
@@ -29,8 +33,10 @@ const ChatInput = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setLoading(true);
     await dispatch(sendMessage(values));
     setMessage("");
+    setLoading(false);
   };
 
   const handleEmojiClick = (emojiObject, event) => {
@@ -42,18 +48,48 @@ const ChatInput = () => {
     textRef.current.setSelectionRange(newCursorPosition, newCursorPosition);
   };
 
+  const handleOpenEmoji = () => {
+    setisEmojiOpen(!isEmojiOpen);
+    setisAttachmentOpen(false);
+  };
+
+  const handleOpenAttachment = () => {
+    setisAttachmentOpen(!isAttachmentOpen);
+    setisEmojiOpen(false);
+  };
+
   return (
     <div>
+      {isAttachmentOpen && (
+        <AttachmentMenu
+          isopen={isAttachmentOpen}
+          setIsOpen={setisAttachmentOpen}
+        />
+      )}
       <div className="absolute bottom-0 h-16 flex justify-between items-center px-4 bg-dark_bg_4 w-full gap-x-5">
-        <div className="hover:bg-dark_hover_1/50 duration-200 p-2.5 rounded-full commumnity cursor-pointer">
-          <AttachmentIcon className="fill-dark_svg_1/50 cursor-pointer" />
+        <div
+          onClick={() => handleOpenAttachment()}
+          className={`hover:bg-dark_hover_1/50 ${
+            isAttachmentOpen ? "bg-dark_hover_1/50 duration-200 p-2" : "p-2.5"
+          } duration-200  rounded-full commumnity cursor-pointer`}
+        >
+          {isAttachmentOpen ? (
+            <IoIosAdd className="fill-dark_svg_1/50 text-[27px] cursor-pointer rotate-45  " />
+          ) : (
+            <AttachmentIcon className="fill-dark_svg_1/50 cursor-pointer" />
+          )}
         </div>
         <div className="flex-grow flex items-center rounded-lg gap-x-3 p-3 bg-dark_border_2/80 h-10 relative">
-          <div onClick={() => setisopen(!isopen)} className="cursor-pointer">
-            <EmojiIcon className="fill-dark_svg_1/50" />
+          <div onClick={() => handleOpenEmoji()} className="cursor-pointer">
+            <EmojiIcon
+              className={`${
+                isEmojiOpen ? "fill-emerald-500" : "fill-dark_svg_1/50"
+              }`}
+            />
           </div>
           <EmojiPickerApp
-            isopen={isopen}
+            isopen={isEmojiOpen}
+            setisopen={setisEmojiOpen}
             textRef={textRef}
             onEmojiClick={handleEmojiClick}
           />
@@ -68,7 +104,7 @@ const ChatInput = () => {
             <TiMicrophone className="fill-dark_svg_1/50 cursor-pointer text-[26px]" />
           ) : (
             <div onClick={(e) => handleSubmit(e)}>
-              {status === "loading" ? (
+              {loading ? (
                 <ClipLoader color="#3B82F6" size={24} />
               ) : (
                 <SendIcon className="fill-dark_svg_1/50 cursor-pointer" />

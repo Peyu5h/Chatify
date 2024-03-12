@@ -12,18 +12,11 @@ const MessageInput = ({ handleSubmit, textRef }) => {
     handleSubmit(e);
   };
 
-  const handleKeyDown = (e) => {
-    if (e.key === "Backspace") {
-      setMessage((prevMessage) => prevMessage.slice(0, -1));
-    }
-  };
-
   return (
     <div>
       <form onSubmit={handleFormSubmit}>
         <input
           onChange={(e) => setMessage(e.target.value)}
-          onKeyDown={handleKeyDown}
           className="w-[55vw] h-9 bg-transparent outline-none placeholder-dark_text_5 font-light placeholder:font-light placeholder:pl-0.5 text-dark_text_1"
           type="text"
           required

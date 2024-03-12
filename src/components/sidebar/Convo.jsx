@@ -18,6 +18,7 @@ const Convo = ({ convo }) => {
   };
 
   const { user } = useSelector((state) => state.user.user);
+  const { activeConversation } = useSelector((state) => state.chat);
   const token = user.token;
 
   const values = {
@@ -30,7 +31,11 @@ const Convo = ({ convo }) => {
   };
   return (
     <div onClick={() => openConversation()}>
-      <div className="h-[72px] bg-dark_bg_1 hover:bg-dark_bg_2 w-full cursor-pointer px-[10px] border-b-dark_border_1/80 border-b-[0.1px]">
+      <div
+        className={`h-[72px] bg-dark_bg_1 transition-all hover:bg-dark_bg_2 w-full cursor-pointer px-[10px] border-b-dark_border_1/80 border-b-[0.1px] ${
+          convo._id === activeConversation._id ? "bg-dark_bg_2" : ""
+        }`}
+      >
         <div className="relative w-full flex items-center justify-between py-[10px]">
           {/* left */}
           <div className="flex items-center gap-x-3 ">
