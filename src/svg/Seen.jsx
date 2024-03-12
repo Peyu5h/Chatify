@@ -2,8 +2,8 @@ export default function SeenIcon({ className }) {
   return (
     <svg
       viewBox="0 0 18 18"
-      height={18}
-      width={18}
+      height={14}
+      width={14}
       preserveAspectRatio="xMidYMid meet"
       version="1.1"
       x="0px"

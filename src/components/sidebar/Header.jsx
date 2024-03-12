@@ -36,7 +36,6 @@ const Header = () => {
             </div>
             <div
               onClick={() => setShowMenu(!showMenu)}
-              // onClick={() => dispatch(logout())}
               className="hover:bg-dark_hover_1/50 duration-200 p-1.5 rounded-full commumnity cursor-pointer"
             >
               <DotsIcon className="fill-dark_svg_1" />

@@ -46,7 +46,9 @@ const Convo = ({ convo }) => {
               <div>
                 <div className="flex items-center gap-x-1 text-dark_text_2">
                   <span className="text-xs">
-                    {convo.latestMessage?.message}
+                    {convo.latestMessage?.message.length > 24
+                      ? convo.latestMessage?.message.substring(0, 24) + "..."
+                      : convo.latestMessage?.message}
                   </span>
                 </div>
               </div>
@@ -56,7 +58,9 @@ const Convo = ({ convo }) => {
           {/* right */}
           <div className="flex flex-col text-xs gap-y-4 items-end  ">
             <span className="text-dark_text_2">
-              {dateHandler(convo.latestMessage?.createdAt)}
+              {convo.latestMessage?.createdAt
+                ? dateHandler(convo.latestMessage?.createdAt)
+                : ""}
             </span>
           </div>
         </div>

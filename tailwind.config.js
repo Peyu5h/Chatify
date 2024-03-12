@@ -13,6 +13,14 @@ export default {
       xl: "1440px",
     },
     extend: {
+      backgroundImage: {
+        ChatPattern:
+          "url('https://res.cloudinary.com/dkysrpdi6/image/upload/v1710185469/peakpx_2_o8o40w.jpg')",
+
+        chetPattern:
+          "url('https://res.cloudinary.com/dkysrpdi6/image/upload/v1710221899/bg-chat_rtxydo.png')",
+      },
+
       colors: {
         dark_bg_1: "#0D1117", // Darker Background
         dark_bg_2: "#1B1F24", // Background

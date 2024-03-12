@@ -3,12 +3,12 @@ import Sidebar from "../components/sidebar/Sidebar";
 import { useDispatch, useSelector } from "react-redux";
 import { getConversations } from "../rtk/chatSlice";
 import ChatHome from "../components/ChatScreen/ChatHome";
+import ChatPage from "../components/ChatScreen/ChatPage";
 
 const HomePage = () => {
   const dispatch = useDispatch();
   const { user } = useSelector((state) => state.user.user);
   const { activeConversation } = useSelector((state) => state.chat);
-  console.log(activeConversation);
   useEffect(() => {
     const fetchConversations = async () => {
       if (user?.token) {
@@ -26,7 +26,7 @@ const HomePage = () => {
           <Sidebar />
         </div>
         <div className="hidden sm:block col-span-4 lg:col-span-5 h-screen bg-dark_bg_3">
-          {activeConversation._id ? "home" : <ChatHome />}
+          {activeConversation._id ? <ChatPage /> : <ChatHome />}
         </div>
       </div>
     </div>

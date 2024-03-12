@@ -3,11 +3,14 @@ const Conversation_URL = `${
   import.meta.env.VITE_CONVERSATION_URL
 }/conversations`;
 
+const Message_URL = `${import.meta.env.VITE_BACKEND_URL}/message`;
+
 const initialState = {
   status: "",
   error: "",
   conversation: [],
   activeConversation: {},
+  messages: [],
   notifications: [],
 };
 
@@ -63,6 +66,33 @@ export const openCreateConversation = createAsyncThunk(
   }
 );
 
+export const getConvoMessages = createAsyncThunk(
+  "conversation/getMessages",
+  async (values, { rejectWithValue }) => {
+    const { token, convo_id } = values;
+    try {
+      console.log(JSON.stringify({ convo_id }));
+      const response = await fetch(`${Message_URL}/${convo_id}`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error.message);
+      }
+
+      const data = await response.json();
+      return data;
+    } catch (error) {
+      return rejectWithValue(error.response.data.message);
+    }
+  }
+);
+
 export const chatSlice = createSlice({
   name: "chat",
   initialState,
@@ -92,6 +122,17 @@ export const chatSlice = createSlice({
         state.activeConversation = action.payload;
       })
       .addCase(openCreateConversation.rejected, (state, action) => {
+        state.status = "failed";
+        state.error = action.payload;
+      })
+      .addCase(getConvoMessages.pending, (state) => {
+        state.status = "loading";
+      })
+      .addCase(getConvoMessages.fulfilled, (state, action) => {
+        state.status = "succeeded";
+        state.messages = action.payload;
+      })
+      .addCase(getConvoMessages.rejected, (state, action) => {
         state.status = "failed";
         state.error = action.payload;
       });
