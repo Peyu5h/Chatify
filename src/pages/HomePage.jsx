@@ -5,15 +5,22 @@ import { getConversations, updateMessages } from "../rtk/chatSlice";
 import ChatHome from "../components/ChatScreen/ChatHome";
 import ChatPage from "../components/ChatScreen/ChatPage";
 import SocketContext from "../context/SocketContext";
+import { useAtom } from "jotai";
+import { onlineUsersAtom } from "../atom/atom";
 
 const HomePage = ({ socket }) => {
   const dispatch = useDispatch();
   const { user } = useSelector((state) => state.user.user);
   const { activeConversation } = useSelector((state) => state.chat);
+  const [onlineUsers, setOnlineUsers] = useAtom(onlineUsersAtom);
 
   useEffect(() => {
     const userId = user?._id;
     socket.emit("join", userId);
+    socket.on("get-online-users", (users) => {
+      setOnlineUsers(users);
+      console.log(users);
+    });
   }, [user]);
 
   //listen for received messages

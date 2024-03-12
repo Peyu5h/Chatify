@@ -7,6 +7,8 @@ import { IoVideocam } from "react-icons/io5";
 import ClickOutside from "../../../utils/ClickOutside";
 import { useRef, useState } from "react";
 import { logout } from "../../../rtk/userSlice";
+import { useAtom } from "jotai";
+import { onlineUsersAtom } from "../../../atom/atom";
 
 const ChatPageHeader = () => {
   const { activeConversation } = useSelector((state) => state.chat);
@@ -17,6 +19,15 @@ const ChatPageHeader = () => {
   ClickOutside(el, () => {
     setShowMenu(false);
   });
+
+  const [onlineUsers, setOnlineUsers] = useAtom(onlineUsersAtom);
+  const getConversationId = (user, users) => {
+    return users[0]._id === user._id ? users[1]._id : users[0]._id;
+  };
+
+  let check = onlineUsers.find(
+    (u) => u.userId === activeConversation.users[1]._id
+  );
 
   return (
     <div
@@ -35,10 +46,14 @@ const ChatPageHeader = () => {
             <div className="name flex flex-col leading-tight">
               <h1 className="text-md font-medium">{activeConversation.name}</h1>
               <div className="flex items-center">
-                <div className="text-[11px] ml-[1px] text-dark_text_2">
-                  online
-                </div>
-                <div className="h-1 w-1 rounded-full bg-green-500 ml-1"></div>
+                {check ? (
+                  <>
+                    <div className="text-[11px] ml-[1px] text-dark_text_2">
+                      online
+                    </div>
+                    <div className="h-1 w-1 rounded-full bg-green-500 ml-1"></div>
+                  </>
+                ) : null}
               </div>
             </div>
           </div>
