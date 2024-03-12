@@ -61,7 +61,7 @@ export const openCreateConversation = createAsyncThunk(
       const data = await response.json();
       return data;
     } catch (error) {
-      return rejectWithValue(error.response.data.message);
+      return rejectWithValue(error.message);
     }
   }
 );

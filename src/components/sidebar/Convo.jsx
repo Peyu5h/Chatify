@@ -10,6 +10,12 @@ const Convo = ({ convo }) => {
   const getConversationId = (user, users) => {
     return users[0]._id === user._id ? users[1]._id : users[0]._id;
   };
+  const getConversationName = (user, users) => {
+    return users[0]._id === user._id ? users[1].name : users[0].name;
+  };
+  const getConversationPicture = (user, users) => {
+    return users[0]._id === user._id ? users[1].picture : users[0].picture;
+  };
 
   const { user } = useSelector((state) => state.user.user);
   const token = user.token;
@@ -32,7 +38,7 @@ const Convo = ({ convo }) => {
               <div className=" h-[50px] w-[50px] rounded-full overflow-hidden">
                 <div className="aspect-w-1 aspect-h-1">
                   <img
-                    src={convo.picture}
+                    src={getConversationPicture(user, convo.users)}
                     alt={convo.name}
                     className="w-full h-full object-cover rounded-full"
                   />
@@ -43,7 +49,7 @@ const Convo = ({ convo }) => {
             {/* Name & message */}
             <div className="w-full flex flex-col ">
               <h1 className="font-medium flex items-center gap-x-2 text-sm ">
-                {convo.name}
+                {getConversationName(user, convo.users)}
               </h1>
               <div>
                 <div className="flex items-center gap-x-1 text-dark_text_2">

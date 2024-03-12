@@ -1,6 +1,8 @@
 import React from "react";
+import { useSelector } from "react-redux";
 
 const ChatHome = () => {
+  const { user } = useSelector((state) => state.user.user);
   return (
     <div className="flex h-screen w-full items-center justify-center">
       <div className="">
@@ -18,6 +20,7 @@ const ChatHome = () => {
             Make calls, host video chats, engage in group
             <br /> conversations, and share files securely
           </p>
+          helllo {user?.name}
         </h1>
       </div>
     </div>
