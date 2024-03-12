@@ -1,6 +1,8 @@
 import app from "./app.js";
 import logger from "./configs/logger.js";
 import mongoose from "mongoose";
+import { Server } from "socket.io";
+import dotenv from "dotenv";
 
 const PORT = process.env.PORT || 8000;
 const mongoUrl = process.env.DATABASE_URL;
@@ -24,6 +26,41 @@ if (process.env.NODE_ENV !== "production") {
 
 let server = app.listen(PORT, () => {
   logger.info(`Server is running on port ${PORT}`);
+});
+
+// socket.io
+const io = new Server(server, {
+  pingTimeout: 60000,
+  cors: {
+    origin: process.env.CLIENT_URL,
+  },
+});
+
+io.on("connection", (socket) => {
+  logger.info("New Connection");
+
+  // joins on opening website
+  socket.on("join", (user) => {
+    socket.join(user);
+  });
+
+  // joins conversation with frnd
+  socket.on("join_conversation", (conversation) => {
+    socket.join(conversation);
+  });
+
+  //send receive message
+  socket.on("send_message", (message) => {
+    let conversation = message.conversation;
+    if (!conversation.users) {
+      return;
+    }
+    conversation.users.forEach((user) => {
+      if (user !== message.sender) {
+        socket.in(user._id).emit("receive_message", message);
+      }
+    });
+  });
 });
 
 // ============== Error Handling (prettier) ============== //

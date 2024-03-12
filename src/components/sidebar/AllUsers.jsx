@@ -1,7 +1,8 @@
 import { useDispatch, useSelector } from "react-redux";
 import { openCreateConversation } from "../../rtk/chatSlice";
+import SocketContext from "../../context/SocketContext";
 
-const Allusers = ({ convo }) => {
+const Allusers = ({ convo, socket }) => {
   const dispatch = useDispatch();
 
   const { user } = useSelector((state) => state.user.user);
@@ -12,8 +13,9 @@ const Allusers = ({ convo }) => {
     receiver_id: convo._id,
   };
 
-  const openConversation = () => {
-    dispatch(openCreateConversation(values));
+  const openConversation = async () => {
+    const newConvo = await dispatch(openCreateConversation(values));
+    socket.emit("join_conversation", newConvo.payload._id); //{activeConversation._id}
   };
   return (
     <li onClick={() => openConversation()}>
@@ -50,4 +52,12 @@ const Allusers = ({ convo }) => {
   );
 };
 
-export default Allusers;
+const AllusersWithSocket = (props) => {
+  return (
+    <SocketContext.Consumer>
+      {(socket) => <Allusers {...props} socket={socket} />}
+    </SocketContext.Consumer>
+  );
+};
+
+export default AllusersWithSocket;

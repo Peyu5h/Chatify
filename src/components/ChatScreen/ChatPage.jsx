@@ -21,8 +21,6 @@ const ChatPage = () => {
     }
   }, [activeConversation]);
 
-  console.log(messages);
-
   return (
     <div className="relative h-screen bg-cover">
       {/* Background Image */}

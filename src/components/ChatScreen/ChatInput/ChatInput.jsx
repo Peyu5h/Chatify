@@ -12,8 +12,9 @@ import EmojiPickerApp from "./EmojiPicker";
 import { useRef, useState } from "react";
 import AttachmentMenu from "./AttachmentMenu";
 import { IoIosAdd } from "react-icons/io";
+import SocketContext from "../../../context/SocketContext";
 
-const ChatInput = () => {
+const ChatInput = ({ socket }) => {
   const [message, setMessage] = useAtom(messageAtom);
   const [loading, setLoading] = useState(false);
   const [isEmojiOpen, setisEmojiOpen] = useState(false);
@@ -34,7 +35,10 @@ const ChatInput = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
-    await dispatch(sendMessage(values));
+    const newMsg = await dispatch(sendMessage(values));
+    //socket
+    await socket.emit("send_message", newMsg.payload);
+
     setMessage("");
     setLoading(false);
   };
@@ -117,4 +121,12 @@ const ChatInput = () => {
   );
 };
 
-export default ChatInput;
+const ChatInputWithSocket = (props) => {
+  return (
+    <SocketContext.Consumer>
+      {(socket) => <ChatInput {...props} socket={socket} />}
+    </SocketContext.Consumer>
+  );
+};
+
+export default ChatInputWithSocket;

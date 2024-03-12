@@ -3,8 +3,9 @@ import { dateHandler } from "../../utils/date";
 import { openCreateConversation } from "../../rtk/chatSlice";
 import { useAtom } from "jotai";
 import { searchAtom } from "../../atom/atom";
+import SocketContext from "../../context/SocketContext";
 
-const Convo = ({ convo }) => {
+const Convo = ({ convo, socket }) => {
   const dispatch = useDispatch();
 
   const getConversationId = (user, users) => {
@@ -27,7 +28,8 @@ const Convo = ({ convo }) => {
   };
 
   const openConversation = async () => {
-    await dispatch(openCreateConversation(values));
+    const newConvo = await dispatch(openCreateConversation(values));
+    socket.emit("join_conversation", newConvo.payload._id); //{activeConversation._id}
   };
   return (
     <div onClick={() => openConversation()}>
@@ -82,4 +84,12 @@ const Convo = ({ convo }) => {
   );
 };
 
-export default Convo;
+const ConvoWithSocket = (props) => {
+  return (
+    <SocketContext.Consumer>
+      {(socket) => <Convo {...props} socket={socket} />}
+    </SocketContext.Consumer>
+  );
+};
+
+export default ConvoWithSocket;

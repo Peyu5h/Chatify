@@ -43,7 +43,6 @@ export const openCreateConversation = createAsyncThunk(
   async (values, { rejectWithValue }) => {
     const { token, receiver_id } = values;
     try {
-      console.log(JSON.stringify({ receiver_id }));
       const response = await fetch(`${Conversation_URL}`, {
         method: "POST",
         headers: {
@@ -126,6 +125,25 @@ export const chatSlice = createSlice({
     setActiveConveration: (state, action) => {
       state.activeConversation = action.payload;
     },
+
+    updateMessages: (state, action) => {
+      //update messages
+      let convo = state.activeConversation;
+      if (convo._id === action.payload.conversation._id) {
+        state.messages = [...state.messages, action.payload];
+      }
+      //update conversation
+      let conversation = {
+        ...action.payload.conversation,
+        latestMessage: action.payload,
+      };
+      let newConvo = [...state.conversation].filter(
+        (convo) => convo._id !== conversation._id
+      );
+
+      newConvo.unshift(conversation);
+      state.conversation = newConvo;
+    },
   },
   extraReducers: (builder) => {
     builder
@@ -187,5 +205,5 @@ export const chatSlice = createSlice({
   },
 });
 
-export const { setActiveConveration } = chatSlice.actions;
+export const { setActiveConveration, updateMessages } = chatSlice.actions;
 export default chatSlice.reducer;

@@ -1,14 +1,28 @@
 import { useEffect, useMemo, useState } from "react";
 import Sidebar from "../components/sidebar/Sidebar";
 import { useDispatch, useSelector } from "react-redux";
-import { getConversations } from "../rtk/chatSlice";
+import { getConversations, updateMessages } from "../rtk/chatSlice";
 import ChatHome from "../components/ChatScreen/ChatHome";
 import ChatPage from "../components/ChatScreen/ChatPage";
+import SocketContext from "../context/SocketContext";
 
-const HomePage = () => {
+const HomePage = ({ socket }) => {
   const dispatch = useDispatch();
   const { user } = useSelector((state) => state.user.user);
   const { activeConversation } = useSelector((state) => state.chat);
+
+  useEffect(() => {
+    const userId = user?._id;
+    socket.emit("join", userId);
+  }, [user]);
+
+  //listen for received messages
+  useEffect(() => {
+    socket.on("receive_message", (message) => {
+      dispatch(updateMessages(message));
+    });
+  }, []);
+
   useEffect(() => {
     const fetchConversations = async () => {
       if (user?.token) {
@@ -33,4 +47,12 @@ const HomePage = () => {
   );
 };
 
-export default HomePage;
+const HomePageWithSocket = (props) => {
+  return (
+    <SocketContext.Consumer>
+      {(socket) => <HomePage {...props} socket={socket} />}
+    </SocketContext.Consumer>
+  );
+};
+
+export default HomePageWithSocket;
