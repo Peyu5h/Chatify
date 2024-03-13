@@ -5,7 +5,7 @@ import SearchIcon from "../../../svg/Search";
 import { IoIosCall } from "react-icons/io";
 import { IoVideocam } from "react-icons/io5";
 import ClickOutside from "../../../utils/ClickOutside";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { logout } from "../../../rtk/userSlice";
 import { useAtom } from "jotai";
 import { onlineUsersAtom, typingUsersAtom } from "../../../atom/atom";
@@ -26,12 +26,10 @@ const ChatPageHeader = () => {
   const receiverUser = activeConversation.users.find((u) => u._id !== user._id);
 
   let check = onlineUsers.find(
-    (u) => u.userId === activeConversation.users[1]._id
+    (u) =>
+      u.userId === activeConversation.users.find((u) => u._id !== user._id)._id
   );
 
-  const getConversationId = (user, users) => {
-    return users[0]._id === user._id ? users[1]._id : users[0]._id;
-  };
   // let check = onlineUsers.find(
   //   (u) => u.userId === getConversationId(user, conversation.users)
   // );

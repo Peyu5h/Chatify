@@ -2,6 +2,8 @@ import { useDispatch, useSelector } from "react-redux";
 import { dateHandler } from "../../utils/date";
 import { openCreateConversation } from "../../rtk/chatSlice";
 import SocketContext from "../../context/SocketContext";
+import { useAtom } from "jotai";
+import { typingUsersAtom } from "../../atom/atom";
 
 const Convo = ({ convo, socket, online }) => {
   // console.log(check);
@@ -30,6 +32,7 @@ const Convo = ({ convo, socket, online }) => {
     const newConvo = await dispatch(openCreateConversation(values));
     socket.emit("join_conversation", newConvo.payload._id); //{activeConversation._id}
   };
+  const [typing, setTyping] = useAtom(typingUsersAtom);
 
   return (
     <div onClick={() => openConversation()}>
@@ -65,7 +68,13 @@ const Convo = ({ convo, socket, online }) => {
               <div>
                 <div className="flex items-center gap-x-1 text-dark_text_2">
                   <span className="text-xs">
-                    {convo.latestMessage?.message.length > 24
+                    {convo._id === activeConversation._id
+                      ? typing
+                        ? "typing..."
+                        : convo.latestMessage?.message.length > 24
+                        ? convo.latestMessage?.message.substring(0, 24) + "..."
+                        : convo.latestMessage?.message
+                      : convo.latestMessage?.message.length > 24
                       ? convo.latestMessage?.message.substring(0, 24) + "..."
                       : convo.latestMessage?.message}
                   </span>
