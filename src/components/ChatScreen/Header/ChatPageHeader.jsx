@@ -11,7 +11,9 @@ import { useAtom } from "jotai";
 import { onlineUsersAtom, typingUsersAtom } from "../../../atom/atom";
 
 const ChatPageHeader = () => {
-  const { activeConversation } = useSelector((state) => state.chat);
+  const { activeConversation, conversation } = useSelector(
+    (state) => state.chat
+  );
   const user = useSelector((state) => state.user.user.user);
   const dispatch = useDispatch();
   const [showMenu, setShowMenu] = useState(false);
@@ -26,6 +28,13 @@ const ChatPageHeader = () => {
   let check = onlineUsers.find(
     (u) => u.userId === activeConversation.users[1]._id
   );
+
+  const getConversationId = (user, users) => {
+    return users[0]._id === user._id ? users[1]._id : users[0]._id;
+  };
+  // let check = onlineUsers.find(
+  //   (u) => u.userId === getConversationId(user, conversation.users)
+  // );
 
   const [typing, setTyping] = useAtom(typingUsersAtom);
   return (
