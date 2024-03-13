@@ -8,7 +8,7 @@ import ClickOutside from "../../../utils/ClickOutside";
 import { useRef, useState } from "react";
 import { logout } from "../../../rtk/userSlice";
 import { useAtom } from "jotai";
-import { onlineUsersAtom } from "../../../atom/atom";
+import { onlineUsersAtom, typingUsersAtom } from "../../../atom/atom";
 
 const ChatPageHeader = () => {
   const { activeConversation } = useSelector((state) => state.chat);
@@ -21,14 +21,13 @@ const ChatPageHeader = () => {
   });
 
   const [onlineUsers, setOnlineUsers] = useAtom(onlineUsersAtom);
-  const getConversationId = (user, users) => {
-    return users[0]._id === user._id ? users[1]._id : users[0]._id;
-  };
+  const receiverUser = activeConversation.users.find((u) => u._id !== user._id);
 
   let check = onlineUsers.find(
     (u) => u.userId === activeConversation.users[1]._id
   );
 
+  const [typing, setTyping] = useAtom(typingUsersAtom);
   return (
     <div
       style={{ zIndex: 9 }}
@@ -39,19 +38,27 @@ const ChatPageHeader = () => {
           {/* LEFT */}
           <div className="nameContainer flex gap-x-3.5">
             <img
-              src={activeConversation.picture}
+              src={receiverUser.picture}
               alt="dp"
               className="rounded-full object-cover h-9 w-9"
             />
             <div className="name flex flex-col leading-tight">
-              <h1 className="text-md font-medium">{activeConversation.name}</h1>
+              <h1 className="text-md font-medium">{receiverUser.name}</h1>
               <div className="flex items-center">
                 {check ? (
                   <>
-                    <div className="text-[11px] ml-[1px] text-dark_text_2">
-                      online
-                    </div>
-                    <div className="h-1 w-1 rounded-full bg-green-500 ml-1"></div>
+                    {typing ? (
+                      <div className="text-[11px] ml-[1px] text-emerald-400">
+                        typing...
+                      </div>
+                    ) : (
+                      <>
+                        <div className="text-[11px] ml-[1px] text-dark_text_2">
+                          online
+                        </div>
+                        <div className="h-1 w-1 rounded-full bg-green-500 ml-1"></div>{" "}
+                      </>
+                    )}
                   </>
                 ) : null}
               </div>

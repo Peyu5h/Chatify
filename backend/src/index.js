@@ -78,6 +78,15 @@ io.on("connection", (socket) => {
       }
     });
   });
+
+  socket.on("typing", (conversation) => {
+    console.log("typing...", conversation);
+    socket.in(conversation).emit("typing");
+  });
+  socket.on("stopTyping", (conversation) => {
+    console.log("stop typing...", conversation);
+    socket.in(conversation).emit("stopTyping");
+  });
 });
 
 // ============== Error Handling (prettier) ============== //

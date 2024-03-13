@@ -6,20 +6,19 @@ import ChatHome from "../components/ChatScreen/ChatHome";
 import ChatPage from "../components/ChatScreen/ChatPage";
 import SocketContext from "../context/SocketContext";
 import { useAtom } from "jotai";
-import { onlineUsersAtom } from "../atom/atom";
+import { onlineUsersAtom, typingUsersAtom } from "../atom/atom";
 
 const HomePage = ({ socket }) => {
   const dispatch = useDispatch();
   const { user } = useSelector((state) => state.user.user);
   const { activeConversation } = useSelector((state) => state.chat);
   const [onlineUsers, setOnlineUsers] = useAtom(onlineUsersAtom);
-
+  const [isTyping, setIsTyping] = useAtom(typingUsersAtom);
   useEffect(() => {
     const userId = user?._id;
     socket.emit("join", userId);
     socket.on("get-online-users", (users) => {
       setOnlineUsers(users);
-      console.log(users);
     });
   }, [user]);
 
@@ -28,6 +27,23 @@ const HomePage = ({ socket }) => {
     socket.on("receive_message", (message) => {
       dispatch(updateMessages(message));
     });
+
+    socket.on("typing", () => {
+      console.log("Received typing event");
+      setIsTyping(true);
+    });
+
+    socket.on("stopTyping", () => {
+      console.log("Received stopTyping event");
+      setIsTyping(false);
+    });
+
+    return () => {
+      // Clean up event listeners when the component unmounts
+      socket.off("receive_message");
+      socket.off("typing");
+      socket.off("stopTyping");
+    };
   }, []);
 
   useEffect(() => {

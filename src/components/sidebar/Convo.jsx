@@ -1,11 +1,10 @@
 import { useDispatch, useSelector } from "react-redux";
 import { dateHandler } from "../../utils/date";
 import { openCreateConversation } from "../../rtk/chatSlice";
-import { useAtom } from "jotai";
-import { searchAtom } from "../../atom/atom";
 import SocketContext from "../../context/SocketContext";
 
-const Convo = ({ convo, socket }) => {
+const Convo = ({ convo, socket, online }) => {
+  // console.log(check);
   const dispatch = useDispatch();
 
   const getConversationId = (user, users) => {
@@ -31,6 +30,7 @@ const Convo = ({ convo, socket }) => {
     const newConvo = await dispatch(openCreateConversation(values));
     socket.emit("join_conversation", newConvo.payload._id); //{activeConversation._id}
   };
+
   return (
     <div onClick={() => openConversation()}>
       <div
@@ -40,9 +40,13 @@ const Convo = ({ convo, socket }) => {
       >
         <div className="relative w-full flex items-center justify-between py-[10px]">
           {/* left */}
-          <div className="flex items-center gap-x-3 ">
+          <div className="flex relative items-center gap-x-3 ">
             <div className="">
-              <div className=" h-[50px] w-[50px] rounded-full overflow-hidden">
+              <div
+                className={`${
+                  online ? "border-2 border-emerald-400" : ""
+                } h-[50px] w-[50px] rounded-full overflow-hidden`}
+              >
                 <div className="aspect-w-1 aspect-h-1">
                   <img
                     src={getConversationPicture(user, convo.users)}
