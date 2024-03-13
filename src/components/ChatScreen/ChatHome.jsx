@@ -20,7 +20,6 @@ const ChatHome = () => {
             Make calls, host video chats, engage in group
             <br /> conversations, and share files securely
           </p>
-          helllo {user?.name}
         </h1>
       </div>
     </div>
