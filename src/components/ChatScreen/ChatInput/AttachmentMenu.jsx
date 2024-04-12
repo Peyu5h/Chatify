@@ -4,6 +4,8 @@ import { IoIosDocument } from "react-icons/io";
 import { IoPerson } from "react-icons/io5";
 import ClickOutside from "../../../utils/ClickOutside";
 import { useRef } from "react";
+import PhotoVideos from "./Attachement/PhotoVideos";
+import Documents from "./Attachement/Documents";
 
 const AttachmentMenu = ({ setIsOpen }) => {
   const el = useRef(null);
@@ -20,15 +22,10 @@ const AttachmentMenu = ({ setIsOpen }) => {
           <FaCamera className="fill-rose-600 text-xl cursor-pointer" />
           <p className="">Camera</p>
         </div>
-        <div className="document flex items-center gap-x-3 px-3 py-3 hover:bg-dark_bg_3/50 rounded-lg cursor-pointer">
-          <IoMdPhotos className="fill-blue-500 text-2xl cursor-pointer" />
-          <p className="">Photos & Videos</p>
-        </div>
 
-        <div className="document flex items-center gap-x-3 px-3 py-3 hover:bg-dark_bg_3/50 rounded-lg cursor-pointer">
-          <IoIosDocument className="fill-yellow-500 text-2xl cursor-pointer" />
-          <p className="">Documents</p>
-        </div>
+        <PhotoVideos />
+
+        <Documents />
 
         <div className="document flex items-center gap-x-3 px-3 py-3 hover:bg-dark_bg_3/50 rounded-lg cursor-pointer">
           <IoPerson className="text-teal-500 text-2xl cursor-pointer" />

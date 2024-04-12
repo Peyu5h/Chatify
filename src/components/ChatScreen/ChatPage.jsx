@@ -4,11 +4,12 @@ import ChatMessages from "./ChatMessages/ChatMessages";
 import { useEffect } from "react";
 import { getConvoMessages } from "../../rtk/chatSlice";
 import ChatInput from "./ChatInput/ChatInput";
+import PreviewScreen from "./ChatInput/Attachement/PreviewScreen";
 
 const ChatPage = () => {
   const { user } = useSelector((state) => state.user.user);
   const token = user.token;
-  const { activeConversation, messages } = useSelector((state) => state.chat);
+  const { activeConversation, files } = useSelector((state) => state.chat);
   const dispatch = useDispatch();
   const values = {
     token,
@@ -29,8 +30,14 @@ const ChatPage = () => {
 
       <div className="relative h-screen z-10">
         <ChatPageHeader />
-        <ChatMessages />
-        <ChatInput />
+        {files.length > 0 ? (
+          <PreviewScreen />
+        ) : (
+          <>
+            <ChatMessages />
+            <ChatInput />
+          </>
+        )}
       </div>
     </div>
   );

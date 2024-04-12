@@ -32,9 +32,9 @@ const Messages = ({ messages, me }) => {
             </p>
             {/* date */}
 
-            <p className="absolute flex gap-x-1 text-[11px] right-1 bottom-[-4px] m-1 text-dark_text_5">
+            <p className="absolute flex gap-x-1 text-[11px] right-1 bottom-[-4px] m-1 text-dark_text_4/80">
               {moment(messages.createdAt).format("h:mm A")}
-              {me && <SeenIcon className="fill-dark_text_5 " />}
+              {me && <SeenIcon className="fill-blue-300 " />}
             </p>
           </div>
         </div>
