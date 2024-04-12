@@ -107,13 +107,15 @@ const ChatInput = ({ socket }) => {
           {message.length === 0 ? (
             <TiMicrophone className="fill-dark_svg_1/50 cursor-pointer text-[26px]" />
           ) : (
-            <div onClick={(e) => handleSubmit(e)}>
-              {loading ? (
-                <ClipLoader color="#3B82F6" size={24} />
-              ) : (
-                <SendIcon className="fill-dark_svg_1/50 cursor-pointer" />
-              )}
-            </div>
+            message.length > 0 && (
+              <div onClick={(e) => handleSubmit(e)}>
+                {loading ? (
+                  <ClipLoader color="#3B82F6" size={24} />
+                ) : (
+                  <SendIcon className="fill-dark_svg_1/50 cursor-pointer" />
+                )}
+              </div>
+            )
           )}
         </div>
       </div>

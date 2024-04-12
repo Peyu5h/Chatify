@@ -1,12 +1,16 @@
 import { RxCross1 } from "react-icons/rx";
 import { useDispatch } from "react-redux";
-import { addFiles, clearFiles } from "../../../../rtk/chatSlice";
+import {
+  addFiles,
+  clearFiles,
+  removeFileFromArray,
+} from "../../../../rtk/chatSlice";
 import { useSelector } from "react-redux";
 import { IoAdd } from "react-icons/io5";
-import { MdSend } from "react-icons/md";
-import { useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { getFileType } from "../../../../utils/getFileType";
 import getPreviewImg from "../../../../utils/getPreviewImg";
+import SendFiles from "./SendFiles";
 
 const PreviewScreen = () => {
   const dispatch = useDispatch();
@@ -92,7 +96,16 @@ const PreviewScreen = () => {
     });
   };
 
-  const length = files ? files?.length - 1 : 0;
+  const [length, setLength] = useState(0);
+  const [message, setMessage] = useState("");
+
+  useEffect(() => {
+    if (files && files.length > 0) {
+      setLength(files.length - 1);
+    } else {
+      setLength(0);
+    }
+  }, [files]);
 
   return (
     <div>
@@ -164,13 +177,12 @@ const PreviewScreen = () => {
 
           {/* input */}
           <input
-            // onChange={onChangeHandler}
+            onChange={(e) => setMessage(e.target.value)}
             className="w-[55vw] mt-6 bg-dark_bg_4 py-3 pl-4 px-3 rounded-lg outline-none placeholder-dark_text_5 font-light placeholder:font-light placeholder:pl-0.5 text-dark_text_1"
             type="text"
             required
-            // value={message}
+            value={message}
             placeholder="Type a message"
-            // ref={textRef}
           />
 
           {/* divider */}
@@ -179,23 +191,31 @@ const PreviewScreen = () => {
           <div className="h-20  w-[90%] flex justify-between">
             <div className=""></div>
             <div className="addIMG">
-              <div className="flex gap-x-3">
+              <div className="flex relative gap-x-3">
                 {files[length]?.type === "image"
                   ? files.map((file, index) => (
-                      <img
-                        key={index}
-                        src={file.imageData}
-                        className={`object-cover h-14 w-14 rounded-md ${
-                          index === length ? "border-blue_1 border-2" : ""
-                        } cursor-pointer`}
-                        alt=""
-                      />
+                      <div key={index} className="relative">
+                        <img
+                          src={file.imageData}
+                          onClick={() => setLength(index)}
+                          className={`  object-cover h-14 w-14 rounded-md ${
+                            index === length ? "border-blue_1 border-2" : ""
+                          } cursor-pointer`}
+                          alt=""
+                        />
+                        <div className="absolute -right-1 -top-1.5 cursor-pointer bg-dark_bg_4 p-1 rounded-full">
+                          <RxCross1 className="text-[12px]" />
+                        </div>
+                      </div>
                     ))
                   : files.map((file, index) => (
                       <img
                         key={index}
+                        onClick={() => setLength(index)}
                         src={getPreviewImg(file.type)}
-                        className={`object-cover h-14 w-14 rounded-md  cursor-pointer`}
+                        className={`object-cover p-2  h-14 w-14 rounded-md ${
+                          index === length ? "border-blue_1 border-2" : ""
+                        } cursor-pointer`}
                         alt=""
                       />
                     ))}
@@ -211,9 +231,7 @@ const PreviewScreen = () => {
 
             {/* send */}
             <div className="flex items-center justify-center">
-              <button className="bg-blue_1 hover:bg-blue_3 duration-200 p-4 rounded-full text-white">
-                <MdSend className="h-6 w-6 " />
-              </button>
+              <SendFiles files={files} message={message} />
             </div>
           </div>
         </div>

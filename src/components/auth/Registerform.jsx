@@ -15,7 +15,8 @@ const Registerform = () => {
   const [showPass, setShowPass] = useState(false);
   const [loading, setLoading] = useState(false);
 
-  const CLOUDINARY_SEC = "wzj4shyr";
+  const CLOUDINARY_SEC = import.meta.env.VITE_CLOUDINARY_SEC;
+  const CLOUDINARY_NAME = import.meta.env.VITE_CLOUDINARY_NAME;
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -40,7 +41,7 @@ const Registerform = () => {
         formData.append("file", selectedFile);
 
         const response = await fetch(
-          "https://api.cloudinary.com/v1_1/dkysrpdi6/image/upload",
+          `https://api.cloudinary.com/v1_1/${CLOUDINARY_NAME}/image/upload`,
           {
             method: "POST",
             body: formData,

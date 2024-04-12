@@ -149,6 +149,12 @@ export const chatSlice = createSlice({
     addFiles: (state, action) => {
       state.files = [...state.files, action.payload];
     },
+    removeFileFromArray: (state, action) => {
+      const index = action.payload;
+      const files = [...state.files];
+      const fileToRemove = [files[index]];
+      state.files = state.files.filter((file) => file !== action.payload);
+    },
     clearFiles: (state) => {
       state.files = [];
     },
@@ -214,6 +220,11 @@ export const chatSlice = createSlice({
   },
 });
 
-export const { setActiveConveration, updateMessages, addFiles, clearFiles } =
-  chatSlice.actions;
+export const {
+  setActiveConveration,
+  updateMessages,
+  addFiles,
+  removeFileFromArray,
+  clearFiles,
+} = chatSlice.actions;
 export default chatSlice.reducer;
