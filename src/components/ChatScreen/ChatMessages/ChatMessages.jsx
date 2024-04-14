@@ -3,7 +3,7 @@ import { useSelector } from "react-redux";
 import Messages from "./Messages";
 
 const ChatMessages = () => {
-  const { messages, status } = useSelector((state) => state.chat);
+  const { messages } = useSelector((state) => state.chat);
   const { user } = useSelector((state) => state.user.user);
   const [imageLoaded, setImageLoaded] = useState(true);
   const [displayedMessages, setDisplayedMessages] = useState([]);
@@ -11,22 +11,27 @@ const ChatMessages = () => {
   const endRef = useRef(null);
 
   useEffect(() => {
-    // Scroll to the bottom when messages change
     endRef.current.scrollIntoView({ behavior: "smooth" });
-  }, [displayedMessages]);
+  }, [displayedMessages, imageLoaded]);
 
   useEffect(() => {
-    // Update displayed messages when messages change
     setDisplayedMessages(messages);
   }, [messages]);
 
   useEffect(() => {
-    // Delay setting imageLoaded to false
     const timeout = setTimeout(() => {
       setImageLoaded(false);
-    }, 2000);
+    }, 2000); // Timeout to change imageLoaded to false after 2 seconds
     return () => clearTimeout(timeout);
   }, []);
+
+  useEffect(() => {
+    // ScrollIntoView after 500ms when imageLoaded changes
+    const timeout = setTimeout(() => {
+      endRef.current.scrollIntoView({ behavior: "smooth" });
+    }, 500);
+    return () => clearTimeout(timeout);
+  }, [imageLoaded]);
 
   return (
     <div>

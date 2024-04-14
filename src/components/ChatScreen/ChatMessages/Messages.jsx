@@ -3,6 +3,10 @@ import SeenIcon from "../../../svg/Seen";
 import getPreviewImg from "../../../utils/getPreviewImg";
 import { HiDownload } from "react-icons/hi";
 import useDownloader from "react-use-downloader";
+import ReactPlayer from "react-player";
+import { useEffect, useState } from "react";
+import { RxCross2 } from "react-icons/rx";
+import GridImageSlider from "./GridImageSlider";
 
 const Messages = ({ messages, me, imageLoaded }) => {
   const { download } = useDownloader();
@@ -11,8 +15,53 @@ const Messages = ({ messages, me, imageLoaded }) => {
     return (bytes / (1024 * 1024)).toFixed(2);
   };
 
+  const [previewImg, setPreviewImg] = useState(false);
+  const [ImagesDisplay, setImagesDisplay] = useState([]);
+
+  useEffect(() => {
+    console.log(ImagesDisplay);
+  }, [ImagesDisplay]);
+
   return (
     <div>
+      {previewImg && (
+        <div className="fixed inset-0 h-screen w-auto bg-black bg-opacity-60 z-50 flex justify-center items-center">
+          <div
+            onClick={() => {
+              setPreviewImg(false);
+              setImagesDisplay("");
+            }}
+            className="absolute cursor-pointer hover:bg-blue_3 duration-200 top-16 right-24 crossBtn h-16 w-16 flex items-center justify-center rounded-full bg-blue_4"
+          >
+            <RxCross2 className="text-2xl" />
+          </div>
+          {ImagesDisplay ? (
+            <div className="h-[75vh]">
+              {ImagesDisplay.map((imageArray, outerIndex) => (
+                <div key={outerIndex} className="flex">
+                  {Array.isArray(imageArray) ? (
+                    // grid images
+                    <GridImageSlider images={ImagesDisplay} />
+                  ) : (
+                    //  single Image
+                    <div className="h-[75vh]">
+                      <img
+                        className="object-contain h-[100%] w-[100%] rounded-md cursor-pointer"
+                        src={imageArray.file.secure_url}
+                        alt=""
+                        onClick={() => {
+                          setPreviewImg(true);
+                          setImagesDisplay([imageArray]);
+                        }}
+                      />
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+          ) : null}
+        </div>
+      )}
       <div
         className={`w-full flex mt-2 space-x-3 max-w-[416px] ${
           me ? "ml-auto justify-end" : ""
@@ -47,7 +96,13 @@ const Messages = ({ messages, me, imageLoaded }) => {
                   // img
                   messages.files.length > 3 ? (
                     // four grid images
-                    <div className="w-[300px] h-[300px] grid grid-cols-2 grid-rows-2 gap-0.5 cursor-pointer">
+                    <div
+                      onClick={() => {
+                        setPreviewImg(true);
+                        setImagesDisplay([messages.files]);
+                      }}
+                      className="w-[300px] h-[300px] grid grid-cols-2 grid-rows-2 gap-0.5 cursor-pointer"
+                    >
                       <img
                         src={messages.files[0].file.secure_url}
                         className="w-[150px] h-[150px] object-cover rounded-md"
@@ -83,6 +138,11 @@ const Messages = ({ messages, me, imageLoaded }) => {
                     messages.message.length == 0 ? (
                       messages.files.map((file, index) => (
                         <img
+                          onClick={() => {
+                            setPreviewImg(true);
+
+                            setImagesDisplay([file]);
+                          }}
                           key={index}
                           src={file.file.secure_url}
                           className={`${
@@ -103,6 +163,24 @@ const Messages = ({ messages, me, imageLoaded }) => {
                     )
                   ) : (
                     <div className="h-[300px] w-[300px] animate-pulse bg-black/20"></div>
+                  )
+                ) : messages.files[0].type == "VIDEO" ? (
+                  imageLoaded === false ? (
+                    <div className="m-0.5 rounded-md overflow-hidden bg-black">
+                      <ReactPlayer
+                        // light={true}
+                        autoplay={true}
+                        muted={true}
+                        // loop={true}
+                        // playing={true}
+                        url={messages.files[0].file.secure_url}
+                        controls
+                        width="300px"
+                        height="auto"
+                      />
+                    </div>
+                  ) : (
+                    <div className="h-[200px] w-[300px] animate-pulse bg-black/20"></div>
                   )
                 ) : // Other fileTypes
                 messages.message.length == 0 ? (
