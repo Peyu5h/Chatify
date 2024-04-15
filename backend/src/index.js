@@ -90,6 +90,19 @@ io.on("connection", (socket) => {
     console.log("stop typing...", conversation);
     socket.in(conversation).emit("stopTyping");
   });
+
+  // call
+  socket.on("callUser", (data) => {
+    let userid = data.userToCall;
+    let userSocketId = onlineUsers.find((u) => u.userId === userid);
+
+    io.to(userSocketId.socketId).emit("callUser", {
+      signal: data.signal,
+      from: data.from,
+      name: data.name,
+      picture: data.picture,
+    });
+  });
 });
 
 // ============== Error Handling (prettier) ============== //
