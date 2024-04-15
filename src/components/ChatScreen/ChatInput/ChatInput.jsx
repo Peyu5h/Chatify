@@ -20,7 +20,7 @@ const ChatInput = ({ socket }) => {
   const [isEmojiOpen, setisEmojiOpen] = useState(false);
   const [isAttachmentOpen, setisAttachmentOpen] = useState(false);
   const { activeConversation } = useSelector((state) => state.chat);
-  const { user } = useSelector((state) => state.user);
+  const { user } = useSelector((state) => state.user.user);
   const { token } = user;
   const dispatch = useDispatch();
   const textRef = useRef();

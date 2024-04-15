@@ -51,7 +51,10 @@ const Header = () => {
               className="absolute rounded-md text-sm right-8 top-12 w-[12rem]  bg-dark_bg_4 z-9"
             >
               <div className="flex flex-col  my-1">
-                <div className="grp cursor-pointer duration-150 hover:bg-dark_bg_3 p-3">
+                <div
+                  onClick={() => setShowUserProfile(true)}
+                  className="grp cursor-pointer duration-150 hover:bg-dark_bg_3 p-3"
+                >
                   My Profile
                 </div>
                 <div className="grp cursor-pointer  duration-150 hover:bg-dark_bg_3 p-3">
