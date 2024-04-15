@@ -8,7 +8,11 @@ import ClickOutside from "../../../utils/ClickOutside";
 import { useEffect, useRef, useState } from "react";
 import { logout } from "../../../rtk/userSlice";
 import { useAtom } from "jotai";
-import { onlineUsersAtom, typingUsersAtom } from "../../../atom/atom";
+import {
+  onlineUsersAtom,
+  showUserInfoAtom,
+  typingUsersAtom,
+} from "../../../atom/atom";
 
 const ChatPageHeader = () => {
   const { activeConversation, conversation } = useSelector(
@@ -35,6 +39,8 @@ const ChatPageHeader = () => {
   // );
 
   const [typing, setTyping] = useAtom(typingUsersAtom);
+  const [showUserInfo, setShowUserInfo] = useAtom(showUserInfoAtom);
+
   return (
     <div
       style={{ zIndex: 9 }}
@@ -98,14 +104,26 @@ const ChatPageHeader = () => {
               className="absolute rounded-md text-sm right-8 top-12 w-[12rem] font-light bg-dark_bg_4 z-9"
             >
               <div className="flex flex-col  my-1">
-                <div className="grp cursor-pointer duration-150 hover:bg-dark_bg_3 p-3">
+                <div
+                  onClick={() => {
+                    setShowUserInfo(true), setShowMenu(false);
+                  }}
+                  className="grp cursor-pointer duration-150 hover:bg-dark_bg_3 p-3"
+                >
                   User info
                 </div>
-                <div className="grp cursor-pointer  duration-150 hover:bg-dark_bg_3 p-3">
+                <div
+                  onClick={() => {
+                    setShowMenu(false);
+                  }}
+                  className="grp cursor-pointer  duration-150 hover:bg-dark_bg_3 p-3"
+                >
                   Mute notifications
                 </div>
                 <div
-                  onClick={() => dispatch(logout())}
+                  onClick={() => {
+                    setShowMenu(false);
+                  }}
                   className=" cursor-pointer  duration-150 hover:bg-dark_bg_3 p-3"
                 >
                   Clear chats

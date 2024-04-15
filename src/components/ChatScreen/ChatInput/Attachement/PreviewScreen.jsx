@@ -176,14 +176,16 @@ const PreviewScreen = () => {
           </div>
 
           {/* input */}
-          <input
-            onChange={(e) => setMessage(e.target.value)}
-            className="w-[55vw] mt-6 bg-dark_bg_4 py-3 pl-4 px-3 rounded-lg outline-none placeholder-dark_text_5 font-light placeholder:font-light placeholder:pl-0.5 text-dark_text_1"
-            type="text"
-            required
-            value={message}
-            placeholder="Type a message"
-          />
+          <div className="w-full ">
+            <input
+              onChange={(e) => setMessage(e.target.value)}
+              className="w-[95%] mx-6 mt-6 bg-dark_bg_4 py-3 pl-4 px-3 rounded-lg outline-none placeholder-dark_text_5 font-light placeholder:font-light placeholder:pl-0.5 text-dark_text_1"
+              type="text"
+              required
+              value={message}
+              placeholder="Type a message"
+            />
+          </div>
 
           {/* divider */}
           <div className="w-[90%] h-[0.5px] my-5 bg-dark_hover_1/70"></div>

@@ -5,6 +5,8 @@ import ChatIcon from "../../svg/ChatIcon";
 import DotsIcon from "../../svg/Dots";
 import { logout } from "../../rtk/userSlice";
 import ClickOutside from "../../utils/ClickOutside";
+import { showProfileInfoAtom } from "../../atom/atom";
+import { useAtom } from "jotai";
 
 const Header = () => {
   const user = useSelector((state) => state.user.user.user);
@@ -14,12 +16,13 @@ const Header = () => {
   ClickOutside(el, () => {
     setShowMenu(false);
   });
+  const [showUserProfile, setShowUserProfile] = useAtom(showProfileInfoAtom);
   return (
     <div>
       <div className="relative h-[50px] bg-dark_bg_2 flex items-center p-4">
         {/* container */}
         <div className="w-full flex items-center justify-between">
-          <button>
+          <button onClick={() => setShowUserProfile(true)}>
             <img
               src={user.picture}
               alt="dp"

@@ -6,7 +6,14 @@ import ChatHome from "../components/ChatScreen/ChatHome";
 import ChatPage from "../components/ChatScreen/ChatPage";
 import SocketContext from "../context/SocketContext";
 import { useAtom } from "jotai";
-import { onlineUsersAtom, typingUsersAtom } from "../atom/atom";
+import {
+  onlineUsersAtom,
+  showProfileInfoAtom,
+  showUserInfoAtom,
+  typingUsersAtom,
+} from "../atom/atom";
+import ContactInfo from "../components/ContactInfo/ContactInfo";
+import Profile from "../components/Profile/Profile";
 
 const HomePage = ({ socket }) => {
   const dispatch = useDispatch();
@@ -14,6 +21,9 @@ const HomePage = ({ socket }) => {
   const { activeConversation } = useSelector((state) => state.chat);
   const [onlineUsers, setOnlineUsers] = useAtom(onlineUsersAtom);
   const [isTyping, setIsTyping] = useAtom(typingUsersAtom);
+  const [showUserInfo, setShowUserInfo] = useAtom(showUserInfoAtom);
+  const [showProfileInfo, setShowProfileInfo] = useAtom(showProfileInfoAtom);
+
   useEffect(() => {
     const userId = user?._id;
     socket.emit("join", userId);
@@ -59,12 +69,34 @@ const HomePage = ({ socket }) => {
   return (
     <div>
       <div className="h-screen bg-dark_bg_1 text-dark_text_1  grid grid-rows-1 grid-cols-7">
-        <div className=" col-span-7 sm:col-span-3 lg:col-span-2">
+        {showProfileInfo && (
+          <div className=" slide-in-from-left col-span-7 sm:col-span-3 lg:col-span-2">
+            <div className="">
+              <Profile />
+            </div>
+          </div>
+        )}
+        <div
+          className={`${
+            showProfileInfo ? "hidden col-span-0" : ""
+          } col-span-7 sm:col-span-3 lg:col-span-2`}
+        >
           <Sidebar />
         </div>
-        <div className="hidden sm:block col-span-4 lg:col-span-5 h-screen bg-dark_bg_3">
+        <div
+          className={`hidden sm:block col-span-4 ${
+            showUserInfo ? "lg:col-span-3" : "lg:col-span-5"
+          } h-screen bg-dark_bg_3`}
+        >
           {activeConversation._id ? <ChatPage /> : <ChatHome />}
         </div>
+        {showUserInfo && (
+          <div className=" slide-in-from-right col-span-7 sm:col-span-3 lg:col-span-2">
+            <div className="">
+              <ContactInfo />
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

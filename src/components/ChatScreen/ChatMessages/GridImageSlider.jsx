@@ -10,9 +10,8 @@ const GridImageSlider = ({ images }) => {
     slidesToScroll: 4,
     slidesPerRow: 1,
     draggable: true,
-
-    vertical: true, // Enable vertical scrolling
-    verticalSwiping: true, // Enable vertical swiping
+    vertical: true,
+    verticalSwiping: true,
     autoplay: true,
   };
 
