@@ -18,10 +18,6 @@ const Messages = ({ messages, me, imageLoaded }) => {
   const [previewImg, setPreviewImg] = useState(false);
   const [ImagesDisplay, setImagesDisplay] = useState([]);
 
-  useEffect(() => {
-    console.log(ImagesDisplay);
-  }, [ImagesDisplay]);
-
   return (
     <div>
       {previewImg && (

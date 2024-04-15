@@ -70,6 +70,19 @@
   animation: slideInFromLeft 0.5s ease-in-out forwards;
 }
 
+.LargeVideoCall {
+  @apply absolute top-0 bottom-0 left-0 right-0 z-20 object-cover h-full bg-red-400 cursor-pointer;
+}
+.SmallVideoCall {
+  @apply w-28 h-32 object-cover absolute bottom-4 right-2 z-30 bg-blue-500 cursor-pointer;
+}
+.moveVideoCall {
+  @apply bottom-32 transition-all duration-100;
+}
+.moveActionsComp {
+  @apply block;
+}
+
 /* emoji picker */
 
 .epr-dark-theme {

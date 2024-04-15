@@ -1,9 +1,10 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import Sidebar from "../components/sidebar/Sidebar";
 import { useDispatch, useSelector } from "react-redux";
 import { getConversations, updateMessages } from "../rtk/chatSlice";
 import ChatHome from "../components/ChatScreen/ChatHome";
 import ChatPage from "../components/ChatScreen/ChatPage";
+import Call from "../components/Calling/VideoCall/Call";
 import SocketContext from "../context/SocketContext";
 import { useAtom } from "jotai";
 import {
@@ -66,6 +67,40 @@ const HomePage = ({ socket }) => {
     fetchConversations();
   }, [dispatch, user?.token]);
 
+  // call
+  const callData = {
+    socketId: "",
+    receivingCall: false,
+    callEnded: false,
+  };
+
+  const [call, setCall] = useState(callData);
+  const { receivingCall, callEnded } = call;
+  const [callAccepted, setCallAccepted] = useState(false);
+
+  const [stream, setStream] = useState(null);
+  const myVideo = useRef();
+  const userVideo = useRef();
+
+  useEffect(() => {
+    setupMedia();
+    socket.on("setup socket", (id) => {
+      setCall({ ...call, socketId: id });
+    });
+  }, []);
+
+  console.log("socketId ----> ", call.socketId);
+
+  const setupMedia = () => {
+    navigator.mediaDevices
+      .getUserMedia({ video: true, audio: true })
+      .then((currentStream) => {
+        setStream(currentStream);
+        userVideo.current.srcObject = stream;
+        myVideo.current.srcObject = stream;
+      });
+  };
+
   return (
     <div>
       <div className="h-screen bg-dark_bg_1 text-dark_text_1  grid grid-rows-1 grid-cols-7">
@@ -98,6 +133,15 @@ const HomePage = ({ socket }) => {
           </div>
         )}
       </div>
+      <Call
+        receivingCall={receivingCall}
+        call={call}
+        setCall={setCall}
+        callAccepted={callAccepted}
+        myVideo={myVideo}
+        userVideo={userVideo}
+        stream={stream}
+      />
     </div>
   );
 };

@@ -52,6 +52,9 @@ io.on("connection", (socket) => {
     }
     //send online users to frontend
     io.emit("get-online-users", onlineUsers);
+
+    //send socketid
+    io.emit("setup socket", socket.id);
   });
   //socket disconnect
   socket.on("disconnect", () => {
