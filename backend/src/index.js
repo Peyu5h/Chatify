@@ -1,8 +1,15 @@
-import app from "./app.js";
+import express from "express";
 import logger from "./configs/logger.js";
 import mongoose from "mongoose";
 import { Server } from "socket.io";
+import cors from "cors";
 import dotenv from "dotenv";
+
+dotenv.config();
+
+const app = express();
+
+app.use(cors());
 
 const PORT = process.env.PORT || 8000;
 const mongoUrl = process.env.DATABASE_URL;
@@ -31,9 +38,6 @@ let server = app.listen(PORT, () => {
 // socket.io
 const io = new Server(server, {
   pingTimeout: 60000,
-  cors: {
-    origin: process.env.CLIENT_URL,
-  },
 });
 
 let onlineUsers = [];
