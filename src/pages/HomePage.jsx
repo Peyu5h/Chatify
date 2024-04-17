@@ -26,7 +26,6 @@ const HomePage = ({ socket }) => {
   const [isTyping, setIsTyping] = useAtom(typingUsersAtom);
   const [showUserInfo, setShowUserInfo] = useAtom(showUserInfoAtom);
   const [showProfileInfo, setShowProfileInfo] = useAtom(showProfileInfoAtom);
-  const [showVideoCall, setShowVideoCall] = useAtom(showVideoCallAtom);
 
   useEffect(() => {
     const userId = user?._id;
