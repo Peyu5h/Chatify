@@ -6,7 +6,7 @@ import { getConvoMessages } from "../../rtk/chatSlice";
 import ChatInput from "./ChatInput/ChatInput";
 import PreviewScreen from "./ChatInput/Attachement/PreviewScreen";
 
-const ChatPage = () => {
+const ChatPage = ({ callUser }) => {
   const { user } = useSelector((state) => state.user.user);
   const token = user.token;
   const { activeConversation, files } = useSelector((state) => state.chat);
@@ -29,7 +29,7 @@ const ChatPage = () => {
       {/* <div className="absolute inset-0 bg-ChatPattern opacity-20 bg-cover"></div> */}
 
       <div className="relative h-screen z-10">
-        <ChatPageHeader />
+        <ChatPageHeader callUser={callUser} />
         {files.length > 0 ? (
           <PreviewScreen />
         ) : (

@@ -11,10 +11,12 @@ import {
   onlineUsersAtom,
   showProfileInfoAtom,
   showUserInfoAtom,
+  showVideoCallAtom,
   typingUsersAtom,
 } from "../atom/atom";
 import ContactInfo from "../components/ContactInfo/ContactInfo";
 import Profile from "../components/Profile/Profile";
+import Peer from "peerjs";
 
 const HomePage = ({ socket }) => {
   const dispatch = useDispatch();
@@ -72,11 +74,14 @@ const HomePage = ({ socket }) => {
     socketId: "",
     receivingCall: false,
     callEnded: false,
+    name: "",
+    picture: "",
   };
 
   const [call, setCall] = useState(callData);
   const { receivingCall, callEnded } = call;
   const [callAccepted, setCallAccepted] = useState(false);
+  const [showVideoCall, setShowVideoCall] = useAtom(showVideoCallAtom);
 
   const [stream, setStream] = useState(null);
   const myVideo = useRef();
@@ -87,18 +92,72 @@ const HomePage = ({ socket }) => {
     socket.on("setup socket", (id) => {
       setCall({ ...call, socketId: id });
     });
+
+    socket.on("callUser", (data) => {
+      setCall({
+        ...call,
+        receivingCall: true,
+        name: data.name,
+        picture: data.picture,
+        socketId: data.from,
+      });
+    });
   }, []);
 
-  console.log("socketId ----> ", call.socketId);
+  console.log(call);
+
+  socket.on("responseToClient", (data) => {
+    console.log("Response received from server:", data);
+  });
+  const getConversationId = (user, users) => {
+    return users[0]._id === user._id ? users[1]._id : users[0]._id;
+  };
+  const getConversationName = (user, users) => {
+    return users[0]._id === user._id ? users[1].name : users[0].name;
+  };
+  const getConversationPicture = (user, users) => {
+    return users[0]._id === user._id ? users[1].picture : users[0].picture;
+  };
+
+  const callUser = () => {
+    enableMedia();
+    setCall({
+      ...call,
+      name: getConversationName(user, activeConversation.users),
+      picture: getConversationPicture(user, activeConversation.users),
+    });
+
+    const peer = new Peer({
+      initiator: true,
+      trickle: false,
+      stream: stream,
+    });
+
+    peer.on("signal", (data) => {
+      socket.emit("callUser", {
+        userToCall: getConversationId(user, activeConversation.users),
+        signalData: data,
+        from: call.socketId,
+        name: user.name,
+        picture: user.picture,
+      });
+    });
+  };
 
   const setupMedia = () => {
     navigator.mediaDevices
       .getUserMedia({ video: true, audio: true })
       .then((currentStream) => {
         setStream(currentStream);
-        userVideo.current.srcObject = stream;
-        myVideo.current.srcObject = stream;
+        if (myVideo.current && userVideo.current) {
+          myVideo.current.srcObject = stream;
+          userVideo.current.srcObject = stream;
+        }
       });
+  };
+
+  const enableMedia = () => {
+    myVideo.current.srcObject = stream;
   };
 
   return (
@@ -123,7 +182,11 @@ const HomePage = ({ socket }) => {
             showUserInfo ? "lg:col-span-3" : "lg:col-span-5"
           } h-screen bg-dark_bg_3`}
         >
-          {activeConversation._id ? <ChatPage /> : <ChatHome />}
+          {activeConversation._id ? (
+            <ChatPage callUser={callUser} />
+          ) : (
+            <ChatHome />
+          )}
         </div>
         {showUserInfo && (
           <div className=" slide-in-from-right col-span-7 sm:col-span-3 lg:col-span-2">
@@ -133,15 +196,17 @@ const HomePage = ({ socket }) => {
           </div>
         )}
       </div>
-      <Call
-        receivingCall={receivingCall}
-        call={call}
-        setCall={setCall}
-        callAccepted={callAccepted}
-        myVideo={myVideo}
-        userVideo={userVideo}
-        stream={stream}
-      />
+      {showVideoCall && (
+        <Call
+          receivingCall={receivingCall}
+          call={call}
+          setCall={setCall}
+          callAccepted={callAccepted}
+          myVideo={myVideo}
+          userVideo={userVideo}
+          stream={stream}
+        />
+      )}
     </div>
   );
 };

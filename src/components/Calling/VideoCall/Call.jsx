@@ -14,7 +14,7 @@ const Call = ({ call, setCall, callAccepted, myVideo, userVideo, stream }) => {
         style={{ zIndex: 1000 }}
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
-        className={`z-9  w-[20rem] h-[32rem]  bg-dark_bg_4 flex flex-col justify-between fixed top-16 rounded-xl left-1/2 -translate-x-1/2 text-dark_text_1`}
+        className={`z-9  overflow-hidden w-[20rem] h-[32rem]  bg-dark_bg_4 flex flex-col justify-between fixed top-16 rounded-xl left-1/2 -translate-x-1/2 text-dark_text_1`}
       >
         <div
           style={{

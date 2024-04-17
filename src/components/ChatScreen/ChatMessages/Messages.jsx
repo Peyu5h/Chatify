@@ -165,7 +165,7 @@ const Messages = ({ messages, me, imageLoaded }) => {
                     <div className="m-0.5 rounded-md overflow-hidden bg-black">
                       <ReactPlayer
                         // light={true}
-                        autoplay={true}
+                        // autoplay={true}
                         muted={true}
                         // loop={true}
                         // playing={true}
