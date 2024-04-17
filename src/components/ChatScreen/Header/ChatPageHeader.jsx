@@ -34,6 +34,7 @@ const ChatPageHeader = ({ callUser }) => {
     (u) =>
       u.userId === activeConversation.users.find((u) => u._id !== user._id)._id
   );
+  const [showVideoCall, setShowVideoCall] = useAtom(showVideoCallAtom);
 
   // let check = onlineUsers.find(
   //   (u) => u.userId === getConversationId(user, conversation.users)
@@ -83,9 +84,15 @@ const ChatPageHeader = ({ callUser }) => {
           {/* RIGHT */}
           <div className="flex items-center justify-center gap-x-4">
             <div
+<<<<<<< HEAD
               onClick={async () => {
                 await setShowVideoCall(true);
                 await callUser();
+=======
+              onClick={() => {
+                setShowVideoCall(true);
+                callUser();
+>>>>>>> 2ce53cbeb50723c7f2225624dae92a11e85077fc
               }}
               className="hover:bg-dark_hover_1/50 duration-200 p-1.5 rounded-full commumnity cursor-pointer"
             >

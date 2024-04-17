@@ -13,7 +13,6 @@ const Conversations = () => {
 
   const [onlineUsers, setOnlineUsers] = useAtom(onlineUsersAtom);
   const { user } = useSelector((state) => state.user.user);
-  console.log(onlineUsers);
   return (
     <div>
       <div className=" converSATIONS scrollbar text-white">

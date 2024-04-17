@@ -26,6 +26,7 @@ const HomePage = ({ socket }) => {
   const [isTyping, setIsTyping] = useAtom(typingUsersAtom);
   const [showUserInfo, setShowUserInfo] = useAtom(showUserInfoAtom);
   const [showProfileInfo, setShowProfileInfo] = useAtom(showProfileInfoAtom);
+  const [showVideoCall, setShowVideoCall] = useAtom(showVideoCallAtom);
 
   useEffect(() => {
     const userId = user?._id;
@@ -52,7 +53,6 @@ const HomePage = ({ socket }) => {
     });
 
     return () => {
-      // Clean up event listeners when the component unmounts
       socket.off("receive_message");
       socket.off("typing");
       socket.off("stopTyping");

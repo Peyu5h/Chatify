@@ -1,8 +1,15 @@
-import app from "./app.js";
+import express from "express";
 import logger from "./configs/logger.js";
 import mongoose from "mongoose";
 import { Server } from "socket.io";
+import cors from "cors";
 import dotenv from "dotenv";
+
+dotenv.config();
+
+const app = express();
+
+app.use(cors());
 
 const PORT = process.env.PORT || 8000;
 const mongoUrl = process.env.DATABASE_URL;
@@ -31,9 +38,6 @@ let server = app.listen(PORT, () => {
 // socket.io
 const io = new Server(server, {
   pingTimeout: 60000,
-  cors: {
-    origin: process.env.CLIENT_URL,
-  },
 });
 
 let onlineUsers = [];
@@ -93,16 +97,19 @@ io.on("connection", (socket) => {
 
   // call
   socket.on("callUser", (data) => {
-    let userid = data.userToCall;
-    let userSocketId = onlineUsers.find((u) => u.userId === userid);
+    console.log(data);
+    // let userid = data.userToCall;
+    // let userSocketId = onlineUsers.find((u) => u.userId === userid);
 
-    io.to(userSocketId.socketId).emit("callUser", {
-      signal: data.signal,
-      from: data.from,
-      name: data.name,
-      picture: data.picture,
-    });
+    // io.to(data.userToCall).emit("bruh", {
+    //   signal: data.signal,
+    //   from: data.from,
+    //   name: data.name,
+    //   picture: data.picture,
+    // });
   });
+
+  // Add your logic here to handle the callUser event
 });
 
 // ============== Error Handling (prettier) ============== //
