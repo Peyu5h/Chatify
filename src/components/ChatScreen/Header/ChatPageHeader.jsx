@@ -11,10 +11,11 @@ import { useAtom } from "jotai";
 import {
   onlineUsersAtom,
   showUserInfoAtom,
+  showVideoCallAtom,
   typingUsersAtom,
 } from "../../../atom/atom";
 
-const ChatPageHeader = () => {
+const ChatPageHeader = ({ callUser }) => {
   const { activeConversation, conversation } = useSelector(
     (state) => state.chat
   );
@@ -33,6 +34,7 @@ const ChatPageHeader = () => {
     (u) =>
       u.userId === activeConversation.users.find((u) => u._id !== user._id)._id
   );
+  const [showVideoCall, setShowVideoCall] = useAtom(showVideoCallAtom);
 
   // let check = onlineUsers.find(
   //   (u) => u.userId === getConversationId(user, conversation.users)
@@ -80,7 +82,13 @@ const ChatPageHeader = () => {
 
           {/* RIGHT */}
           <div className="flex items-center justify-center gap-x-4">
-            <div className="hover:bg-dark_hover_1/50 duration-200 p-1.5 rounded-full commumnity cursor-pointer">
+            <div
+              onClick={() => {
+                setShowVideoCall(true);
+                callUser();
+              }}
+              className="hover:bg-dark_hover_1/50 duration-200 p-1.5 rounded-full commumnity cursor-pointer"
+            >
               <IoVideocam className="fill-dark_svg_2 size-6 " />
             </div>
             <div className="hover:bg-dark_hover_1/50 duration-200 p-1.5 rounded-full commumnity cursor-pointer">

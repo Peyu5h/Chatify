@@ -1,9 +1,13 @@
+import { useAtom } from "jotai";
 import React from "react";
 import { FaVideo, FaVideoSlash } from "react-icons/fa";
 import { HiSpeakerWave, HiSpeakerXMark } from "react-icons/hi2";
 import { IoIosCall, IoMdMic, IoMdMicOff } from "react-icons/io";
+import { showVideoCallAtom } from "../../../atom/atom";
 
 const CallFooter = () => {
+  const [showVideoCall, setShowVideoCall] = useAtom(showVideoCallAtom);
+
   return (
     <div>
       <div className="w-full px-4 pb-3 pt-1 bg-dark_bg_2 flex flex-col rounded-t-2xl rounded-b-lg">
@@ -24,7 +28,10 @@ const CallFooter = () => {
             {/* <IoMdMicOff />  */}
           </div>
 
-          <div className="decline p-2 w-auto bg-rose-500 rounded-full">
+          <div
+            onClick={() => setShowVideoCall(false)}
+            className="decline p-2 w-auto bg-rose-500 rounded-full"
+          >
             <IoIosCall className="text-2xl rot135 " />
           </div>
         </div>

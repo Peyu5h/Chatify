@@ -12,7 +12,6 @@ const GridImageSlider = ({ images }) => {
     draggable: true,
     vertical: true,
     verticalSwiping: true,
-    autoplay: true,
   };
 
   return (

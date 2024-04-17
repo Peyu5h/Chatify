@@ -93,16 +93,19 @@ io.on("connection", (socket) => {
 
   // call
   socket.on("callUser", (data) => {
-    let userid = data.userToCall;
-    let userSocketId = onlineUsers.find((u) => u.userId === userid);
+    console.log(data);
+    // let userid = data.userToCall;
+    // let userSocketId = onlineUsers.find((u) => u.userId === userid);
 
-    io.to(userSocketId.socketId).emit("callUser", {
-      signal: data.signal,
-      from: data.from,
-      name: data.name,
-      picture: data.picture,
-    });
+    // io.to(data.userToCall).emit("bruh", {
+    //   signal: data.signal,
+    //   from: data.from,
+    //   name: data.name,
+    //   picture: data.picture,
+    // });
   });
+
+  // Add your logic here to handle the callUser event
 });
 
 // ============== Error Handling (prettier) ============== //

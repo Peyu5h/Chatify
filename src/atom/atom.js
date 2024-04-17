@@ -10,3 +10,5 @@ export const typingUsersAtom = atom(false);
 export const showUserInfoAtom = atom(false);
 
 export const showProfileInfoAtom = atom(false);
+
+export const showVideoCallAtom = atom(false);
