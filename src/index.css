@@ -12,6 +12,9 @@
     transform: rotate(-90deg);
   }
 }
+.rot135 {
+  transform: rotate(-225deg);
+}
 
 .converSATIONS {
   height: calc(100vh - 6.5rem);

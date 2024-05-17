@@ -92,22 +92,22 @@ const HomePage = ({ socket }) => {
       setCall({ ...call, socketId: id });
     });
 
-    socket.on("callUser", (data) => {
+    socket.on("call-user", (data) => {
       setCall({
         ...call,
         receivingCall: true,
         name: data.name,
         picture: data.picture,
+        signal: data.signal,
         socketId: data.from,
       });
+      setShowVideoCall(true);
     });
   }, []);
 
   console.log(call);
+  console.log(showVideoCall);
 
-  socket.on("responseToClient", (data) => {
-    console.log("Response received from server:", data);
-  });
   const getConversationId = (user, users) => {
     return users[0]._id === user._id ? users[1]._id : users[0]._id;
   };
@@ -131,11 +131,10 @@ const HomePage = ({ socket }) => {
       trickle: false,
       stream: stream,
     });
-
-    peer.on("signal", (data) => {
-      socket.emit("callUser", {
+    peer.on("open", (id) => {
+      socket.emit("call-user", {
         userToCall: getConversationId(user, activeConversation.users),
-        signalData: data,
+        signal: id,
         from: call.socketId,
         name: user.name,
         picture: user.picture,
@@ -145,7 +144,7 @@ const HomePage = ({ socket }) => {
 
   const setupMedia = () => {
     navigator.mediaDevices
-      .getUserMedia({ video: true, audio: true })
+      .getUserMedia({ video: true })
       .then((currentStream) => {
         setStream(currentStream);
         if (myVideo.current && userVideo.current) {

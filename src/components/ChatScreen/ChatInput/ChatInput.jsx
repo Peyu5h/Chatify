@@ -1,4 +1,4 @@
-import React, { useRef, useState } from "react";
+import { useRef, useState } from "react";
 import { IoIosAdd } from "react-icons/io";
 import { TiMicrophone } from "react-icons/ti";
 import { ClipLoader } from "react-spinners";
@@ -58,7 +58,6 @@ const ChatInput = ({ socket }) => {
   };
 
   const handleClick = (e) => {
-    // Check if the click target is not the emoji icon
     if (!e.target.closest(".emoji-icon")) {
       textRef.current.focus();
     }
@@ -75,7 +74,7 @@ const ChatInput = ({ socket }) => {
       <div className="absolute bottom-0 h-16 flex justify-between items-center px-4 bg-dark_bg_4 w-full gap-x-5 ">
         <div
           onClick={() => handleOpenAttachment()}
-          className={`hover:bg-dark_hover_1/50 ${
+          className={`hover:bg-dark_hover_1/50 relative ${
             isAttachmentOpen ? "bg-dark_hover_1/50 duration-200 p-2" : "p-2.5"
           } duration-200  rounded-full commumnity cursor-pointer`}
         >
@@ -85,7 +84,7 @@ const ChatInput = ({ socket }) => {
             <AttachmentIcon className="fill-dark_svg_1/50 cursor-pointer" />
           )}
         </div>
-        <div className="flex-grow flex items-center rounded-lg gap-x-3 p-3 bg-dark_border_2/80 h-10 relative cursor-text">
+        <div className="flex-grow flex items-center rounded-lg gap-x-3 p-3 w-full bg-dark_border_2/80 h-10 relative cursor-text">
           <div
             onClick={() => handleOpenEmoji()}
             className="cursor-pointer emoji-icon"
@@ -102,11 +101,13 @@ const ChatInput = ({ socket }) => {
             textRef={textRef}
             onEmojiClick={handleEmojiClick}
           />
-          <MessageInput
-            handleSubmit={handleSubmit}
-            textRef={textRef}
-            className="flex-grow w-full focus:outline-none"
-          />
+          <div className="w-full">
+            <MessageInput
+              handleSubmit={handleSubmit}
+              textRef={textRef}
+              className=" flex absolute w-full focus:outline-none"
+            />
+          </div>
         </div>
         <div>
           {message.length === 0 ? (
