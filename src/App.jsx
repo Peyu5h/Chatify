@@ -13,7 +13,7 @@ const App = () => {
   const backendUrl = import.meta.env.VITE_BACKEND_URL.split("/api/v1")[0];
 
   //Socket
-  const socket = io("http://localhost:3000", {});
+  const socket = io(`${backendUrl}`, {});
 
   return (
     <div className="selection:text-white selection:bg-gray-600 overflow-hidden">

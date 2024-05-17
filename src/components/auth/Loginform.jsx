@@ -14,7 +14,6 @@ const Loginform = () => {
   const { status, error } = useSelector((state) => state.user);
   const [showPass, setShowPass] = useState(false);
 
-  console.log(error?.error);
   const dispatch = useDispatch();
   const navigate = useNavigate();
 

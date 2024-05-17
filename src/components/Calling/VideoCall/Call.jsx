@@ -10,7 +10,7 @@ const Call = ({ call, setCall, callAccepted, myVideo, userVideo, stream }) => {
 
   useEffect(() => {
     if (stream && userVideo.current) {
-      userVideo.current.srcObject = stream; // Set the remote user's stream to the video element
+      userVideo.current.srcObject = stream;
     }
   }, [stream]);
 
