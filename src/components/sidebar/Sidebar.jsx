@@ -12,8 +12,8 @@ const Sidebar = () => {
 
   return (
     <div>
-      <div className="">
-        <div className="header">
+      <div className="w-full">
+        <div className="header w-full">
           <Header />
           <Search
             setSearchResults={setSearchResults}

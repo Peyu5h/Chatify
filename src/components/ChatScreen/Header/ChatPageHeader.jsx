@@ -2,7 +2,7 @@ import { useDispatch, useSelector } from "react-redux";
 import DotsIcon from "../../../svg/Dots";
 import SearchIcon from "../../../svg/Search";
 
-import { IoIosCall } from "react-icons/io";
+import { IoIosArrowBack, IoIosCall } from "react-icons/io";
 import { IoVideocam } from "react-icons/io5";
 import ClickOutside from "../../../utils/ClickOutside";
 import { useEffect, useRef, useState } from "react";
@@ -14,6 +14,10 @@ import {
   showVideoCallAtom,
   typingUsersAtom,
 } from "../../../atom/atom";
+import {
+  EmptyActiveConveration,
+  setActiveConveration,
+} from "../../../rtk/chatSlice";
 
 const ChatPageHeader = ({ callUser }) => {
   const { activeConversation, conversation } = useSelector(
@@ -43,27 +47,42 @@ const ChatPageHeader = ({ callUser }) => {
   const [typing, setTyping] = useAtom(typingUsersAtom);
   const [showUserInfo, setShowUserInfo] = useAtom(showUserInfoAtom);
 
+  const handleEmptyConversation = () => {
+    dispatch(EmptyActiveConveration());
+  };
+
   return (
     <div
       style={{ zIndex: 9 }}
-      className="border-l-2 w-full border-l-dark_border_1 z-9 "
+      className="border-l-2 w-full border-l-dark_border_1 z-9"
     >
-      <div className=" h-[50px] bg-dark_bg_2 flex p-5">
+      <div className=" h-[50px] bg-dark_bg_2 flex sm:p-5 px-4 sm:py-0 py-8">
         <div className="w-full flex items-center justify-between">
           {/* LEFT */}
           <div className="nameContainer flex gap-x-3.5">
+            <div
+              onClick={handleEmptyConversation}
+              className="backbtn flex items-center justify-center sm:hidden "
+            >
+              <div className="hover:bg-dark_hover_1/50 duration-200 p-1.5 rounded-full commumnity cursor-pointer">
+                <IoIosArrowBack className="fill-dark_svg_2 size-5 sm:size-6" />
+              </div>
+            </div>
             <img
+              onClick={() => setShowUserInfo(true)}
               src={receiverUser.picture}
               alt="dp"
               className="rounded-full object-cover h-9 w-9"
             />
             <div className="name flex flex-col leading-tight">
-              <h1 className="text-md font-medium">{receiverUser.name}</h1>
+              <h1 className="sm:text-md text-[13px] font-medium">
+                {receiverUser.name}
+              </h1>
               <div className="flex items-center">
                 {check ? (
                   <>
                     {typing ? (
-                      <div className="text-[11px] ml-[1px] text-emerald-400">
+                      <div className="sm:text-[11px] text-[10px] ml-[1px] text-emerald-400">
                         typing...
                       </div>
                     ) : (
@@ -81,7 +100,7 @@ const ChatPageHeader = ({ callUser }) => {
           </div>
 
           {/* RIGHT */}
-          <div className="flex items-center justify-center gap-x-4">
+          <div className="flex items-center justify-center gap-x-1 sm:gap-x-4">
             <div
               onClick={async () => {
                 await setShowVideoCall(true);
@@ -89,19 +108,19 @@ const ChatPageHeader = ({ callUser }) => {
               }}
               className="hover:bg-dark_hover_1/50 duration-200 p-1.5 rounded-full commumnity cursor-pointer"
             >
-              <IoVideocam className="fill-dark_svg_2 size-6 " />
+              <IoVideocam className="fill-dark_svg_2 size-5 sm:size-6 " />
             </div>
             <div className="hover:bg-dark_hover_1/50 duration-200 p-1.5 rounded-full commumnity cursor-pointer">
-              <IoIosCall className="fill-dark_svg_2 size-6 " />
+              <IoIosCall className="fill-dark_svg_2 size-5 sm:size-6 " />
             </div>
             <div className="hover:bg-dark_hover_1/50 duration-200 p-1.5 rounded-full commumnity cursor-pointer">
-              <SearchIcon className="fill-dark_svg_2 " />
+              <SearchIcon className="fill-dark_svg_2 size-5 sm:size-6" />
             </div>
             <div
               onClick={() => setShowMenu(true)}
               className="hover:bg-dark_hover_1/50 duration-200 p-1.5 rounded-full commumnity cursor-pointer"
             >
-              <DotsIcon className="fill-dark_svg_2 " />
+              <DotsIcon className="fill-dark_svg_2 size-5 sm:size-6" />
             </div>
           </div>
 

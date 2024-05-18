@@ -19,7 +19,7 @@ const Header = () => {
   const [showUserProfile, setShowUserProfile] = useAtom(showProfileInfoAtom);
   return (
     <div>
-      <div className="relative h-[50px] bg-dark_bg_2 flex items-center p-4">
+      <div className="relative h-[50px] bg-dark_bg_2 flex items-center p-4 w-full">
         {/* container */}
         <div className="w-full flex items-center justify-between">
           <button onClick={() => setShowUserProfile(true)}>

@@ -68,6 +68,19 @@ const HomePage = ({ socket }) => {
     fetchConversations();
   }, [dispatch, user?.token]);
 
+  const [windowWidth, setWindowWidth] = useState(window.innerWidth);
+
+  useEffect(() => {
+    const handleResize = () => {
+      setWindowWidth(window.innerWidth);
+    };
+
+    window.addEventListener("resize", handleResize);
+    return () => {
+      window.removeEventListener("resize", handleResize);
+    };
+  }, []);
+
   // call
   const callData = {
     socketId: "",
@@ -167,11 +180,26 @@ const HomePage = ({ socket }) => {
         )}
         <div
           className={`${
-            showProfileInfo ? "hidden col-span-0" : ""
-          } col-span-7 sm:col-span-3 lg:col-span-2`}
+            showProfileInfo
+              ? "hidden"
+              : "col-span-7 sm:col-span-3 lg:col-span-2"
+          }`}
         >
-          <Sidebar />
+          {windowWidth > 576 ? (
+            <Sidebar />
+          ) : (
+            <div>
+              {activeConversation._id ? (
+                <div className="flex sm:hidden">
+                  {!showUserInfo && <ChatPage callUser={callUser} />}
+                </div>
+              ) : (
+                <Sidebar />
+              )}
+            </div>
+          )}
         </div>
+
         <div
           className={`hidden sm:block col-span-4 ${
             showUserInfo ? "lg:col-span-3" : "lg:col-span-5"

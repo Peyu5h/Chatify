@@ -23,7 +23,7 @@ const ChatPage = ({ callUser }) => {
   }, [activeConversation]);
 
   return (
-    <div className="relative h-screen bg-cover">
+    <div className="relative h-screen bg-cover w-full">
       {/* Background Image */}
       <div className="absolute inset-0 bg-chetPattern opacity-[0.07] bg-fill"></div>
       {/* <div className="absolute inset-0 bg-ChatPattern opacity-20 bg-cover"></div> */}

@@ -11,7 +11,7 @@ const ContactInfo = () => {
   const receiverUser = activeConversation.users.find((u) => u._id !== user._id);
 
   return (
-    <div className="">
+    <div style={{ zIndex: 999 }} className=" w-full h-full">
       <Header />
       <div className="container flex flex-col">
         <div className="info flex flex-col justify-center items-center gap-y-3 bg-dark_bg_3 p-8">

@@ -127,6 +127,10 @@ export const chatSlice = createSlice({
       state.activeConversation = action.payload;
     },
 
+    EmptyActiveConveration: (state) => {
+      state.activeConversation = {};
+    },
+
     updateMessages: (state, action) => {
       //update messages
       let convo = state.activeConversation;
@@ -225,6 +229,7 @@ export const {
   updateMessages,
   addFiles,
   removeFileFromArray,
+  EmptyActiveConveration,
   clearFiles,
 } = chatSlice.actions;
 export default chatSlice.reducer;
