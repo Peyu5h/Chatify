@@ -13,6 +13,7 @@ import fileUpload from "express-fileupload";
 import trimrRequest from "trim-request";
 import createHttpError from "http-errors";
 import routes from "./routes/index.js";
+import { ExpressPeerServer } from "peer";
 
 dotenv.config();
 
@@ -74,6 +75,12 @@ if (process.env.NODE_ENV !== "production") {
 let server = app.listen(PORT, () => {
   logger.info(`Server is running on port ${PORT}`);
 });
+
+// peer server
+const peerServer = ExpressPeerServer(server, {
+  debug: true,
+});
+app.use("/peerjs", peerServer);
 
 // socket.io
 const io = new Server(server, {

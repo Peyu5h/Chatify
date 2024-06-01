@@ -21,12 +21,11 @@ const ChatMessages = () => {
   useEffect(() => {
     const timeout = setTimeout(() => {
       setImageLoaded(false);
-    }, 2000); // Timeout to change imageLoaded to false after 2 seconds
+    }, 2000);
     return () => clearTimeout(timeout);
   }, []);
 
   useEffect(() => {
-    // ScrollIntoView after 500ms when imageLoaded changes
     const timeout = setTimeout(() => {
       endRef.current.scrollIntoView({ behavior: "smooth" });
     }, 500);
@@ -35,7 +34,7 @@ const ChatMessages = () => {
 
   return (
     <div>
-      <div className="scrollbar overflow-scroll h-[87vh] py-2 px-[6%]">
+      <div className="scrollbar overflow-scroll md:h-[87vh] h-[85vh] py-2 px-[6%]">
         {displayedMessages.map((message) => (
           <Messages
             messages={message}

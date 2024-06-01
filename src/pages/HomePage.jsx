@@ -100,10 +100,10 @@ const HomePage = ({ socket }) => {
   const userVideo = useRef();
 
   useEffect(() => {
-    setupMedia();
-    socket.on("setup socket", (id) => {
-      setCall({ ...call, socketId: id });
-    });
+    // setupMedia();
+    // socket.on("setup socket", (id) => {
+    //   setCall({ ...call, socketId: id });
+    // });
 
     socket.on("call-user", (data) => {
       setCall({

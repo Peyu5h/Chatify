@@ -3,11 +3,49 @@ import Header from "./Header";
 import { useSelector } from "react-redux";
 import { MdDone, MdModeEditOutline, MdOutlineBlock } from "react-icons/md";
 import { FaAngleRight, FaBookmark, FaTrash } from "react-icons/fa";
+import * as Yup from "yup";
+import { useFormik } from "formik";
 
 const Profile = () => {
   const { user } = useSelector((state) => state.user.user);
   const [selectedFile, setSelectedFile] = useState(null);
   const CLOUDINARYSEC = import.meta.env.VITE_CLOUDINARY_SEC;
+
+  const formik = useFormik({
+    initialValues: {
+      name: user.name,
+      status: user.status,
+      picture: user.picture,
+    },
+    validationSchema: Yup.object({
+      name: Yup.string()
+        .required("Name cannot be empty")
+        .max(20, "Name is too long"),
+      status: Yup.string()
+        .required("Status cannot be empty")
+        .max(179, "Status cannot be more than 180 characters"),
+    }),
+
+    onSubmit: async (values) => {
+      const { name, status, picture } = values;
+      try {
+        if (selectedFile) {
+          const url = await uploadImg();
+          const data = { name, status, picture: url };
+          console.log(data);
+        } else {
+          const data = { name, status };
+          console.log(data);
+        }
+        console.log("Profile updated successfully");
+      } catch (error) {
+        console.error("Error updating profile:", error);
+      }
+    },
+  });
+
+  const { handleSubmit, handleChange, handleBlur, values, errors, touched } =
+    formik;
 
   const uploadImg = async () => {
     try {
@@ -110,50 +148,91 @@ const Profile = () => {
             <div className="flex gap-x-2 items-center">
               <h1>Edit Profile</h1>
             </div>
-
-            {/* <MdModeEditOutline className="text-xl font-light" /> */}
           </div>
         </div>
 
-        <div className="info flex flex-col  items-start gap-y-1  bg-dark_bg_3 mt-0 border-t-[3px] border-t-dark_bg_2">
-          <div className=" flex flex-col gap-y-1   px-8 py-4 cursor-pointer  w-full">
-            <label className="text-sm text-dark_text_2" htmlFor="name">
-              Your name
-            </label>
-            <div className="w-full flex gap-x-0 items-center">
-              <input
-                className="p-2 px-3 rounded-l-lg bg-dark_bg_4 outline-none border-1 placeholder:text-dark_hover_1 border-dark_border_1 text-dark_text_1 w-full"
-                type="text"
-                id="name"
-                name="name"
-                placeholder={user.name}
-              />
-              <div className="p-2 px-3 rounded-r-lg bg-dark_bg_4 ">
-                <MdDone className="text-2xl text-dark_text_3/50 " />
+        <form onSubmit={handleSubmit}>
+          <div className="info flex flex-col  items-start gap-y-1  bg-dark_bg_3 mt-0 border-t-[3px] border-t-dark_bg_2">
+            <div className=" flex flex-col gap-y-1   px-8 py-4 cursor-pointer  w-full">
+              <label className="text-sm text-dark_text_2" htmlFor="name">
+                Your name
+              </label>
+              <div className="w-full flex gap-x-0 items-center">
+                <input
+                  className="p-2 px-3 rounded-l-lg bg-dark_bg_4 outline-none border-1 placeholder:text-dark_hover_1 border-dark_border_1 text-dark_text_1 w-full"
+                  type="text"
+                  id="name"
+                  name="name"
+                  onChange={handleChange}
+                  value={values.name}
+                  onBlur={handleBlur}
+                  placeholder={user.name}
+                />
+                <button
+                  type="submit"
+                  className={`p-2 px-3 rounded-r-lg bg-dark_bg_4`}
+                >
+                  <MdDone
+                    className={`text-2xl  ${
+                      user.name != values.name && values.name != ""
+                        ? "text-blue_1 "
+                        : " text-dark_text_3/50"
+                    } `}
+                  />
+                </button>
               </div>
+              {errors.name && touched.name ? (
+                <h1 className="text-xs ml-2 text-rose-500">{errors.name}</h1>
+              ) : null}
             </div>
-          </div>
 
-          <div className=" flex flex-col gap-y-1   px-8 py-4 cursor-pointer  w-full">
-            <label className="text-sm text-dark_text_2" htmlFor="name">
-              Your status
-            </label>
-            <div className="w-full flex gap-x-3 items-center">
-              <textarea
-                rows={3}
-                maxLength={180}
-                className="p-2 px-3 max-h-[98px] min-h-[42px] scrollbar rounded-lg bg-dark_bg_4 outline-none border-1 border-dark_border_1 placeholder:text-dark_hover_1 text-dark_text_1 w-full"
-                type="text"
-                id="name"
-                name="name"
-                placeholder={user.status}
-              />
-              <div className="p-2 rounded-full bg-dark_scrollbar">
-                <MdDone className="text-2xl text-dark_text_3/50  " />
+            <div className=" flex flex-col gap-y-1   px-8 py-4 cursor-pointer  w-full">
+              <label
+                className="text-sm text-dark_text_2 flex justify-between mr-14"
+                htmlFor="name"
+              >
+                Your status &nbsp;{" "}
+                {errors.status && touched.status ? (
+                  <h1 className="mt-1 text-xs ml-2 text-rose-500">
+                    {errors.status}
+                  </h1>
+                ) : null}
+              </label>
+              <div className="w-full flex gap-x-3 items-center">
+                <textarea
+                  rows={3}
+                  maxLength={180}
+                  className="p-2 px-3 max-h-[98px] min-h-[42px] scrollbar rounded-lg bg-dark_bg_4 outline-none border-1 border-dark_border_1 placeholder:text-dark_hover_1 text-dark_text_1 w-full"
+                  type="text"
+                  id="name"
+                  onChange={handleChange}
+                  value={values.status}
+                  onBlur={handleBlur}
+                  name="status"
+                  placeholder={user.status}
+                />
+                <button
+                  type="submit"
+                  className={`p-2 rounded-full  ${
+                    (user.status != values.status && values.status != "") ||
+                    selectedFile
+                      ? "bg-blue_1 "
+                      : "bg-dark_scrollbar"
+                  } `}
+                >
+                  <MdDone
+                    className={`text-2xl     ${
+                      (user.status != values.status && values.status != "") ||
+                      selectedFile
+                        ? " text-white "
+                        : "text-dark_text_3/50"
+                    } `}
+                  />
+                </button>
               </div>
             </div>
           </div>
-        </div>
+        </form>
       </div>
     </div>
   );
