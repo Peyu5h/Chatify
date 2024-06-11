@@ -231,5 +231,6 @@ export const {
   removeFileFromArray,
   EmptyActiveConveration,
   clearFiles,
+  updatePeerIds,
 } = chatSlice.actions;
 export default chatSlice.reducer;

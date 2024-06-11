@@ -1,9 +1,11 @@
 import React, { useEffect, useState } from "react";
 import { IoIosCall } from "react-icons/io";
+import { showVideoCallAtom } from "../../../atom/atom";
+import { useAtom } from "jotai";
 
-const Ringing = ({ call, setCall, callAccepted }) => {
-  const { receivingCall, callEnded } = call;
+const Ringing = ({ setIncomingCall, handlePickUp, handleDecline }) => {
   const [timer, setTimer] = useState(0);
+  const [showVideoCall, setShowVideoCall] = useAtom(showVideoCallAtom);
 
   useEffect(() => {
     let interval;
@@ -12,7 +14,7 @@ const Ringing = ({ call, setCall, callAccepted }) => {
         setTimer((prev) => prev + 1);
       }, 1000);
     } else {
-      setCall({ ...call, receivingCall: false });
+      setIncomingCall(false);
     }
     return () => clearInterval(interval);
   }, [timer]);
@@ -34,15 +36,18 @@ const Ringing = ({ call, setCall, callAccepted }) => {
 
           <div className="info">
             <h1 className="text-[11px]">incoming video call</h1>
-            <h1 className="text-sm">{call?.name}</h1>
+            <h1 className="text-sm">SomeOne</h1>
           </div>
 
           <div className="btns flex gap-x-2">
-            <div className="accept p-2 bg-emerald-500 rounded-full">
+            <div
+              onClick={() => handlePickUp()}
+              className="accept p-2 bg-emerald-500 rounded-full"
+            >
               <IoIosCall className="text-2xl" />
             </div>
             <div
-              onClick={() => setCall({ ...call, receivingCall: false })}
+              onClick={() => handleDecline()}
               className="decline p-2 rot135  bg-rose-500 rounded-full"
             >
               <IoIosCall className="text-2xl" />
@@ -51,7 +56,7 @@ const Ringing = ({ call, setCall, callAccepted }) => {
         </div>
       </div>
       <audio
-        src={call?.picture}
+        // src={call?.picture}
         // autoPlay
         loop
       ></audio>

@@ -28,7 +28,13 @@ const app = express();
   app.use(cookieParser()); //parse the cookies
   app.use(compression()); //compress the response
   app.use(fileUpload({ useTempFiles: true })); //parse the file upload
-  app.use(cors()); //enable cors
+  app.use(
+    cors({
+      origin: "*",
+      methods: ["GET", "POST"],
+      allowedHeaders: ["Content-Type", "Authorization"],
+    })
+  );
 }
 // ============================================== //
 app.use("/api/v1", routes);

@@ -1,15 +1,20 @@
 import React, { useRef, useState } from "react";
 import Header from "./Header";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { MdDone, MdModeEditOutline, MdOutlineBlock } from "react-icons/md";
 import { FaAngleRight, FaBookmark, FaTrash } from "react-icons/fa";
 import * as Yup from "yup";
 import { useFormik } from "formik";
+import { changeProfile } from "../../rtk/userSlice";
 
 const Profile = () => {
   const { user } = useSelector((state) => state.user.user);
   const [selectedFile, setSelectedFile] = useState(null);
   const CLOUDINARYSEC = import.meta.env.VITE_CLOUDINARY_SEC;
+  const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
+  const dispatch = useDispatch();
+  const userId = user._id;
+  const token = user.token;
 
   const formik = useFormik({
     initialValues: {
@@ -27,17 +32,46 @@ const Profile = () => {
     }),
 
     onSubmit: async (values) => {
-      const { name, status, picture } = values;
+      const { name, status } = values;
+      let data = { userId, token: token };
+
       try {
         if (selectedFile) {
           const url = await uploadImg();
-          const data = { name, status, picture: url };
-          console.log(data);
+          if (!url) return console.error("Error uploading image");
+
+          if (name && status) {
+            data = {
+              userId: userId,
+              name: name,
+              status: status,
+              picture: url,
+              token: token,
+            };
+          } else if (name) {
+            data = { userId: userId, name: name, picture: url, token: token };
+          } else if (status) {
+            data = {
+              userId: userId,
+              status: status,
+              picture: url,
+              token: token,
+            };
+          } else {
+            data = { userId: userId, picture: url, token: token };
+          }
         } else {
-          const data = { name, status };
-          console.log(data);
+          if (name && status) {
+            data = { userId: userId, name: name, status: status, token: token };
+          } else if (name) {
+            data = { userId: userId, name: name, token: token };
+          } else if (status) {
+            data = { userId: userId, status: status, token: token };
+          }
         }
-        console.log("Profile updated successfully");
+
+        const response = await dispatch(changeProfile(data));
+        console.log(response);
       } catch (error) {
         console.error("Error updating profile:", error);
       }

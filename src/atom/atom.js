@@ -12,3 +12,6 @@ export const showUserInfoAtom = atom(false);
 export const showProfileInfoAtom = atom(false);
 
 export const showVideoCallAtom = atom(false);
+export const speakerMutedAtom = atom(false);
+export const micMutedAtom = atom(false);
+export const videoPausedAtom = atom(false);

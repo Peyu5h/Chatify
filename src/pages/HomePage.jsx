@@ -17,6 +17,10 @@ import {
 import ContactInfo from "../components/ContactInfo/ContactInfo";
 import Profile from "../components/Profile/Profile";
 import Peer from "peerjs";
+import Ringing from "../components/Calling/VideoCall/Ringing";
+import CallHeader from "../components/Calling/VideoCall/CallHeader";
+import CallFooter from "../components/Calling/VideoCall/CallFooter";
+import { updatePeerIds } from "../rtk/userSlice";
 
 const HomePage = ({ socket }) => {
   const dispatch = useDispatch();
@@ -33,6 +37,8 @@ const HomePage = ({ socket }) => {
     socket.on("get-online-users", (users) => {
       setOnlineUsers(users);
     });
+
+    dispatch(updatePeerIds(myPeerId));
   }, [user]);
 
   //listen for received messages
@@ -81,91 +87,115 @@ const HomePage = ({ socket }) => {
     };
   }, []);
 
-  // call
+  //CALLLING
+
+  const [myPeerId, setMyPeerId] = useState("");
+  const [remotePeerId, setRemotePeerId] = useState("");
+  const [incomingCall, setIncomingCall] = useState(null);
+  const [localStream, setLocalStream] = useState(null);
+  const [call, setCall] = useState(null);
+  const [micMuted, setMicMuted] = useState(false);
+  const [speakerMuted, setSpeakerMuted] = useState(false);
+  const [videoPaused, setVideoPaused] = useState(false);
+  const localVideoRef = useRef(null);
+  const remoteVideoRef = useRef(null);
+  const peerRef = useRef(null);
+
+  const [showVideoCall, setShowVideoCall] = useAtom(showVideoCallAtom);
+  const [isHovered, setIsHovered] = useState(false);
+
   const callData = {
-    socketId: "",
+    peerId: myPeerId,
     receivingCall: false,
     callEnded: false,
-    name: "",
-    picture: "",
+    name: user?.name,
+    picture: user?.picture,
   };
 
-  const [call, setCall] = useState(callData);
-  const { receivingCall, callEnded } = call;
-  const [callAccepted, setCallAccepted] = useState(false);
-  const [showVideoCall, setShowVideoCall] = useAtom(showVideoCallAtom);
-
-  const [stream, setStream] = useState(null);
-  const myVideo = useRef();
-  const userVideo = useRef();
-
-  useEffect(() => {
-    // setupMedia();
-    // socket.on("setup socket", (id) => {
-    //   setCall({ ...call, socketId: id });
-    // });
-
-    socket.on("call-user", (data) => {
-      setCall({
-        ...call,
-        receivingCall: true,
-        name: data.name,
-        picture: data.picture,
-        signal: data.signal,
-        socketId: data.from,
+  const callPeer = async (peerId) => {
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({
+        video: true,
+        audio: true,
       });
       setShowVideoCall(true);
-    });
-  }, []);
+      setLocalStream(stream);
 
-  const getConversationId = (user, users) => {
-    return users[0]._id === user._id ? users[1]._id : users[0]._id;
-  };
-  const getConversationName = (user, users) => {
-    return users[0]._id === user._id ? users[1].name : users[0].name;
-  };
-  const getConversationPicture = (user, users) => {
-    return users[0]._id === user._id ? users[1].picture : users[0].picture;
-  };
+      setTimeout(() => {
+        localVideoRef.current.srcObject = stream;
+      }, 100);
 
-  const callUser = () => {
-    enableMedia();
-    setCall({
-      ...call,
-      name: getConversationName(user, activeConversation.users),
-      picture: getConversationPicture(user, activeConversation.users),
-    });
-
-    const peer = new Peer({
-      initiator: true,
-      trickle: false,
-      stream: stream,
-    });
-    peer.on("open", (id) => {
-      socket.emit("call-user", {
-        userToCall: getConversationId(user, activeConversation.users),
-        signal: id,
-        from: call.socketId,
-        name: user.name,
-        picture: user.picture,
+      const call = peerRef.current.call(peerId, stream);
+      call.on("stream", (remoteStream) => {
+        remoteVideoRef.current.srcObject = remoteStream;
       });
-    });
+      setCall(call);
+    } catch (error) {
+      console.error("Error accessing media devices.", error);
+    }
   };
 
-  const setupMedia = () => {
-    navigator.mediaDevices
-      .getUserMedia({ video: true })
-      .then((currentStream) => {
-        setStream(currentStream);
-        if (myVideo.current && userVideo.current) {
-          myVideo.current.srcObject = stream;
-          userVideo.current.srcObject = stream;
-        }
-      });
+  const handlePickUp = async () => {
+    if (incomingCall) {
+      try {
+        const stream = await navigator.mediaDevices.getUserMedia({
+          video: true,
+          audio: true,
+        });
+        setShowVideoCall(true);
+        setLocalStream(stream);
+
+        setTimeout(() => {
+          localVideoRef.current.srcObject = stream;
+        }, 100);
+
+        incomingCall.answer(stream);
+        incomingCall.on("stream", (remoteStream) => {
+          remoteVideoRef.current.srcObject = remoteStream;
+        });
+        setCall(incomingCall);
+        setIncomingCall(null);
+      } catch (error) {
+        console.error("Error accessing media devices.", error);
+      }
+    }
   };
 
-  const enableMedia = () => {
-    myVideo.current.srcObject = stream;
+  const handleDecline = () => {
+    if (incomingCall) {
+      incomingCall.close();
+      setIncomingCall(null);
+      setShowVideoCall(false);
+    }
+  };
+
+  const handleMuteMic = () => {
+    if (localStream) {
+      const enabled = localStream.getAudioTracks()[0].enabled;
+      localStream.getAudioTracks()[0].enabled = !enabled;
+      setMicMuted(!enabled);
+    }
+  };
+
+  const handlePauseVideo = () => {
+    if (localStream) {
+      const enabled = localStream.getVideoTracks()[0].enabled;
+      localStream.getVideoTracks()[0].enabled = !enabled;
+      setVideoPaused(!enabled);
+    }
+  };
+
+  const handleLeaveCall = () => {
+    if (call) {
+      call.close();
+      setCall(null);
+      if (localStream) {
+        localStream.getTracks().forEach((track) => track.stop());
+        setLocalStream(null);
+        localVideoRef.current.srcObject = null;
+        remoteVideoRef.current.srcObject = null;
+      }
+    }
   };
 
   return (
@@ -191,7 +221,7 @@ const HomePage = ({ socket }) => {
             <div>
               {activeConversation._id ? (
                 <div className="flex sm:hidden">
-                  {!showUserInfo && <ChatPage callUser={callUser} />}
+                  {!showUserInfo && <ChatPage callUser={callPeer} />}
                 </div>
               ) : (
                 <Sidebar />
@@ -206,7 +236,7 @@ const HomePage = ({ socket }) => {
           } h-screen bg-dark_bg_3`}
         >
           {activeConversation._id ? (
-            <ChatPage callUser={callUser} />
+            <ChatPage callUser={callPeer} />
           ) : (
             <ChatHome />
           )}
@@ -219,15 +249,92 @@ const HomePage = ({ socket }) => {
           </div>
         )}
       </div>
+
+      {/* ------------------ */}
+      <div className=" w-full bg-gradient-to-br from-slate-700 to-slate-900 text-slate-100">
+        <div>
+          <h3>My Peer ID: {myPeerId}</h3>
+          <input
+            type="text"
+            placeholder="Remote Peer ID"
+            value={remotePeerId}
+            onChange={(e) => setRemotePeerId(e.target.value)}
+          />
+          <button
+            className="p-1 ml-4 rounded-lg px-4 bg-rose-500 text-white"
+            onClick={() => callPeer(remotePeerId)}
+          >
+            Call
+          </button>
+        </div>
+      </div>
+      {/* ------------------ */}
       {showVideoCall && (
-        <Call
-          receivingCall={receivingCall}
-          call={call}
-          setCall={setCall}
-          callAccepted={callAccepted}
-          myVideo={myVideo}
-          userVideo={userVideo}
-          stream={stream}
+        <div>
+          <div className="relative">
+            <div
+              style={{ zIndex: 1000 }}
+              onMouseEnter={() => setIsHovered(true)}
+              onMouseLeave={() => setIsHovered(false)}
+              className={`z-9 overflow-hidden w-[20rem] h-[32rem]  bg-dark_bg_4 flex flex-col justify-between fixed top-16 rounded-xl left-1/2 -translate-x-1/2 text-dark_text_1`}
+            >
+              <div
+                style={{
+                  zIndex: 10,
+                }}
+                className="p-4"
+              >
+                <CallHeader name={name} />
+              </div>
+
+              {/* video Stream */}
+              {/* Remote user's video */}
+              <div className="videoStream relative">
+                <div
+                  className="fixed top-0 left-0 w-full h-full bg-yellow-500 rounded-lg"
+                  style={{
+                    zIndex: 2,
+                  }}
+                >
+                  <video
+                    ref={remoteVideoRef}
+                    autoPlay
+                    playsInline
+                    className="w-full h-full object-cover"
+                  ></video>
+                </div>
+                {/* Local user's video */}
+                <div className="">
+                  <video
+                    ref={localVideoRef}
+                    autoPlay
+                    muted
+                    className={`SmallVideoCall rounded-lg fixed ${
+                      isHovered ? "moveVideoCall" : ""
+                    }`}
+                  ></video>
+                </div>
+              </div>
+              {isHovered && (
+                <div style={{ zIndex: 8 }} className="footer duration-200 ">
+                  <CallFooter
+                    handlePauseVideo={handlePauseVideo}
+                    handleMuteMic={handleMuteMic}
+                    handleLeaveCall={handleLeaveCall}
+                  />
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ring */}
+      {incomingCall && (
+        <Ringing
+          setIncomingCall={setIncomingCall}
+          handlePickUp={handlePickUp}
+          handleDecline={handleDecline}
         />
       )}
     </div>

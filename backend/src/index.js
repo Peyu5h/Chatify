@@ -30,7 +30,13 @@ app.use(mongoSanitize()); //sanitize the data to prevent NoSQL injection
 app.use(cookieParser()); //parse the cookies
 app.use(compression()); //compress the response
 app.use(fileUpload({ useTempFiles: true })); //parse the file upload
-app.use(cors()); //enable cors
+app.use(
+  cors({
+    origin: "*",
+    methods: ["GET", "POST"],
+    allowedHeaders: ["Content-Type", "Authorization"],
+  })
+);
 app.use(trimrRequest.all); //trim request data
 
 app.use("/api/v1", routes);
@@ -92,6 +98,8 @@ const io = new Server(server, {
 });
 
 let onlineUsers = [];
+let userPeerIds = {};
+
 io.on("connection", (socket) => {
   logger.info("New Connection");
 
@@ -99,31 +107,59 @@ io.on("connection", (socket) => {
   socket.on("join", (user) => {
     socket.join(user);
 
-    //add joined user to online users
+    // Add joined user to online users
     if (!onlineUsers.some((u) => u.userId === user)) {
-      console.log(`user ${user} is now online`);
+      console.log(`User ${user} is now online`);
       onlineUsers.push({ userId: user, socketId: socket.id });
     }
-    //send online users to frontend
+    // Send online users to frontend
     io.emit("get-online-users", onlineUsers);
 
-    //send socketid
+    // Send socket id
     io.emit("setup socket", socket.id);
   });
-  //socket disconnect
+
+  // Save peer ID
+  socket.on("sendPeerId", (peerId, userId) => {
+    userPeerIds[userId] = peerId;
+    console.log(`Received peer ID ${peerId} for user ${userId}`);
+  });
+
+  // Handle the event where the client requests a peer ID for a user
+  socket.on("getPeerId", (conversationId, callback) => {
+    console.log(
+      `Request to get peer ID for conversation ID: ${conversationId}`
+    );
+    const user = onlineUsers.find((u) => u.userId === conversationId);
+    if (user) {
+      const peerId = userPeerIds[user.userId];
+      console.log(`Found peer ID ${peerId} for user ${user.userId}`);
+      if (peerId) {
+        callback(peerId);
+      } else {
+        console.log(`No peer ID found for user ${user.userId}`);
+        callback(null);
+      }
+    } else {
+      console.log(`User not found for conversation ID: ${conversationId}`);
+      callback(null);
+    }
+  });
+
+  // Socket disconnect
   socket.on("disconnect", () => {
     onlineUsers = onlineUsers.filter((user) => user.socketId !== socket.id);
-    console.log("user has just disconnected");
+    console.log("User has just disconnected");
 
     io.emit("get-online-users", onlineUsers);
   });
 
-  // joins conversation with frnd
+  // Joins conversation with friend
   socket.on("join_conversation", (conversation) => {
     socket.join(conversation);
   });
 
-  //send receive message
+  // Send/receive message
   socket.on("send_message", (message) => {
     let conversation = message.conversation;
     if (!conversation.users) {
@@ -137,23 +173,13 @@ io.on("connection", (socket) => {
   });
 
   socket.on("typing", (conversation) => {
-    console.log("typing...", conversation);
+    console.log("Typing...", conversation);
     socket.in(conversation).emit("typing");
   });
-  socket.on("stopTyping", (conversation) => {
-    console.log("stop typing...", conversation);
-    socket.in(conversation).emit("stopTyping");
-  });
 
-  // call
-  socket.on("call-user", (data) => {
-    console.log(data);
-    io.to(data.from).emit("call-user", {
-      signal: data.signal,
-      from: data.from,
-      name: data.name,
-      picture: data.picture,
-    });
+  socket.on("stopTyping", (conversation) => {
+    console.log("Stop typing...", conversation);
+    socket.in(conversation).emit("stopTyping");
   });
 });
 

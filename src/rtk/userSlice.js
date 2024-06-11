@@ -1,4 +1,5 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
+import { useSelector } from "react-redux";
 const backendUrl = import.meta.env.VITE_BACKEND_URL.split("/api/v1")[0];
 
 const initialState = {
@@ -12,6 +13,7 @@ const initialState = {
     picture: "",
     status: "",
     token: "",
+    peerId: "",
   },
 };
 
@@ -65,6 +67,31 @@ export const loginUser = createAsyncThunk(
   }
 );
 
+export const changeProfile = createAsyncThunk(
+  "change/profile",
+  async (data) => {
+    try {
+      const response = await fetch(`${backendUrl}/api/v1/changeProfile`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${data.token}`,
+        },
+        body: JSON.stringify(data),
+      });
+
+      if (!response.ok) {
+        throw new Error("Error updating profile");
+      }
+      const deta = await response.json();
+      console.log(deta);
+      return deta;
+    } catch (error) {
+      return error;
+    }
+  }
+);
+
 export const userSlice = createSlice({
   name: "user",
   initialState,
@@ -82,7 +109,11 @@ export const userSlice = createSlice({
           picture: "",
           status: "",
           token: "",
+          peerId: "",
         });
+    },
+    updatePeerIds: (state, action) => {
+      state.user.peerIds = action.payload;
     },
   },
   extraReducers(builder) {
@@ -108,10 +139,19 @@ export const userSlice = createSlice({
       .addCase(loginUser.rejected, (state, action) => {
         state.status = "failed";
         state.error = action.payload;
+      })
+      .addCase(changeProfile.fulfilled, (state, action) => {
+        state.status = "success";
+        const userData = action.payload.user;
+        state.user.user = { ...state.user.user, ...userData };
+      })
+      .addCase(changeProfile.rejected, (state, action) => {
+        state.status = "failed";
+        state.error = action.payload;
       });
   },
 });
 
-export const { login, logout } = userSlice.actions;
+export const { login, logout, updatePeerIds } = userSlice.actions;
 
 export default userSlice.reducer;
