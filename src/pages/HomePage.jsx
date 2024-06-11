@@ -20,61 +20,20 @@ import Peer from "peerjs";
 import Ringing from "../components/Calling/VideoCall/Ringing";
 import CallHeader from "../components/Calling/VideoCall/CallHeader";
 import CallFooter from "../components/Calling/VideoCall/CallFooter";
-import { updatePeerIds } from "../rtk/userSlice";
+import { initializePeerThunk, updatePeerIds } from "../rtk/userSlice";
 
 const HomePage = ({ socket }) => {
   const dispatch = useDispatch();
   const { user } = useSelector((state) => state.user.user);
+  const { peerId } = useSelector((state) => state.user.user);
   const { activeConversation } = useSelector((state) => state.chat);
   const [onlineUsers, setOnlineUsers] = useAtom(onlineUsersAtom);
   const [isTyping, setIsTyping] = useAtom(typingUsersAtom);
   const [showUserInfo, setShowUserInfo] = useAtom(showUserInfoAtom);
   const [showProfileInfo, setShowProfileInfo] = useAtom(showProfileInfoAtom);
 
-  useEffect(() => {
-    const userId = user?._id;
-    socket.emit("join", userId);
-    socket.on("get-online-users", (users) => {
-      setOnlineUsers(users);
-    });
-
-    dispatch(updatePeerIds(myPeerId));
-  }, [user]);
-
-  //listen for received messages
-  useEffect(() => {
-    socket.on("receive_message", (message) => {
-      dispatch(updateMessages(message));
-    });
-
-    socket.on("typing", () => {
-      console.log("Received typing event");
-      setIsTyping(true);
-    });
-
-    socket.on("stopTyping", () => {
-      console.log("Received stopTyping event");
-      setIsTyping(false);
-    });
-
-    return () => {
-      socket.off("receive_message");
-      socket.off("typing");
-      socket.off("stopTyping");
-    };
-  }, []);
-
-  useEffect(() => {
-    const fetchConversations = async () => {
-      if (user?.token) {
-        await dispatch(getConversations(user.token));
-      }
-    };
-
-    fetchConversations();
-  }, [dispatch, user?.token]);
-
   const [windowWidth, setWindowWidth] = useState(window.innerWidth);
+  const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
   useEffect(() => {
     const handleResize = () => {
@@ -87,9 +46,99 @@ const HomePage = ({ socket }) => {
     };
   }, []);
 
+  useEffect(() => {
+    const initPeer = async () => {
+      try {
+        const action = await dispatch(initializePeerThunk());
+        if (initializePeerThunk.fulfilled.match(action)) {
+          const { peer } = action.payload;
+          peerRef.current = peer;
+
+          peer.on("call", (call) => {
+            setIncomingCall(call);
+          });
+        }
+      } catch (error) {
+        console.error("Failed to initialize peer", error);
+      }
+    };
+
+    initPeer();
+
+    return () => {
+      if (peerRef.current) {
+        peerRef.current.destroy();
+      }
+    };
+  }, [dispatch, user]);
+
+  useEffect(() => {
+    const userId = user?._id;
+    socket.emit("join", userId);
+
+    socket.on("get-online-users", (users) => {
+      setOnlineUsers(users);
+    });
+
+    socket.on("user-disconnected", (disconnectedUserId) => {
+      setOnlineUsers((prevUsers) =>
+        prevUsers.filter((user) => user._id !== disconnectedUserId)
+      );
+    });
+  }, [user, socket, setOnlineUsers]);
+
+  //listen for received messages
+  useEffect(() => {
+    socket.on("receive_message", (message) => {
+      dispatch(updateMessages(message));
+    });
+
+    socket.on("typing", () => {
+      // console.log("Received typing event");
+      setIsTyping(true);
+    });
+
+    socket.on("stopTyping", () => {
+      // console.log("Received stopTyping event");
+      setIsTyping(false);
+    });
+
+    return () => {
+      socket.off("receive_message");
+      socket.off("typing");
+      socket.off("stopTyping");
+    };
+  }, [socket, dispatch, setIsTyping]);
+
+  useEffect(() => {
+    const fetchConversations = async () => {
+      if (user?.token) {
+        await dispatch(getConversations(user.token));
+      }
+    };
+
+    fetchConversations();
+  }, [dispatch, user?.token]);
+
   //CALLLING
 
   const [myPeerId, setMyPeerId] = useState("");
+  useEffect(() => {
+    setMyPeerId(peerId);
+    const updatePeerId = async () => {
+      const response = await fetch(`${backendUrl}/updatePeer/set`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${user.token}`,
+        },
+        body: JSON.stringify({ userId: user._id, peerId }),
+      });
+      const data = await response.json();
+    };
+    updatePeerId();
+  }, [user, peerId, dispatch]);
+
   const [remotePeerId, setRemotePeerId] = useState("");
   const [incomingCall, setIncomingCall] = useState(null);
   const [localStream, setLocalStream] = useState(null);
@@ -104,13 +153,18 @@ const HomePage = ({ socket }) => {
   const [showVideoCall, setShowVideoCall] = useAtom(showVideoCallAtom);
   const [isHovered, setIsHovered] = useState(false);
 
-  const callData = {
-    peerId: myPeerId,
-    receivingCall: false,
-    callEnded: false,
-    name: user?.name,
-    picture: user?.picture,
-  };
+  const CallerUser = activeConversation?.users?.find((u) => u._id == user._id);
+
+  useEffect(() => {
+    const receiverUser = activeConversation?.users?.find(
+      (u) => u._id !== user._id
+    );
+
+    const RemotePeerId = receiverUser?.peerId;
+    if (RemotePeerId !== undefined) {
+      setRemotePeerId(RemotePeerId);
+    }
+  }, [activeConversation]);
 
   const callPeer = async (peerId) => {
     try {
@@ -236,7 +290,7 @@ const HomePage = ({ socket }) => {
           } h-screen bg-dark_bg_3`}
         >
           {activeConversation._id ? (
-            <ChatPage callUser={callPeer} />
+            <ChatPage callUser={callPeer} remotePeerId={remotePeerId} />
           ) : (
             <ChatHome />
           )}
@@ -250,25 +304,6 @@ const HomePage = ({ socket }) => {
         )}
       </div>
 
-      {/* ------------------ */}
-      <div className=" w-full bg-gradient-to-br from-slate-700 to-slate-900 text-slate-100">
-        <div>
-          <h3>My Peer ID: {myPeerId}</h3>
-          <input
-            type="text"
-            placeholder="Remote Peer ID"
-            value={remotePeerId}
-            onChange={(e) => setRemotePeerId(e.target.value)}
-          />
-          <button
-            className="p-1 ml-4 rounded-lg px-4 bg-rose-500 text-white"
-            onClick={() => callPeer(remotePeerId)}
-          >
-            Call
-          </button>
-        </div>
-      </div>
-      {/* ------------------ */}
       {showVideoCall && (
         <div>
           <div className="relative">
@@ -335,6 +370,7 @@ const HomePage = ({ socket }) => {
           setIncomingCall={setIncomingCall}
           handlePickUp={handlePickUp}
           handleDecline={handleDecline}
+          CallerUser={CallerUser}
         />
       )}
     </div>

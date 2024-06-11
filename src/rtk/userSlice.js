@@ -1,4 +1,5 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
+import Peer from "peerjs";
 import { useSelector } from "react-redux";
 const backendUrl = import.meta.env.VITE_BACKEND_URL.split("/api/v1")[0];
 
@@ -92,6 +93,27 @@ export const changeProfile = createAsyncThunk(
   }
 );
 
+export const initializePeerThunk = createAsyncThunk(
+  "user/initializePeer",
+  async () => {
+    return new Promise((resolve, reject) => {
+      const newPeer = new Peer(undefined, {
+        host: "webrtc-vepg.onrender.com",
+        secure: true,
+        path: "/peerjs",
+      });
+
+      newPeer.on("open", (id) => {
+        resolve({ peer: newPeer, peerId: id });
+      });
+
+      newPeer.on("error", (err) => {
+        reject(err);
+      });
+    });
+  }
+);
+
 export const userSlice = createSlice({
   name: "user",
   initialState,
@@ -113,7 +135,8 @@ export const userSlice = createSlice({
         });
     },
     updatePeerIds: (state, action) => {
-      state.user.peerIds = action.payload;
+      console.log("Updating peer IDs:", action.payload);
+      state.peerIds = action.payload;
     },
   },
   extraReducers(builder) {
@@ -148,6 +171,17 @@ export const userSlice = createSlice({
       .addCase(changeProfile.rejected, (state, action) => {
         state.status = "failed";
         state.error = action.payload;
+      })
+      .addCase(initializePeerThunk.pending, (state) => {
+        state.status = "loading";
+      })
+      .addCase(initializePeerThunk.fulfilled, (state, action) => {
+        state.user.peerId = action.payload.peerId;
+        state.status = "succeeded";
+      })
+      .addCase(initializePeerThunk.rejected, (state, action) => {
+        state.status = "failed";
+        state.error = action.error.message;
       });
   },
 });

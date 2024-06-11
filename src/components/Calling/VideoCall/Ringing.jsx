@@ -3,7 +3,12 @@ import { IoIosCall } from "react-icons/io";
 import { showVideoCallAtom } from "../../../atom/atom";
 import { useAtom } from "jotai";
 
-const Ringing = ({ setIncomingCall, handlePickUp, handleDecline }) => {
+const Ringing = ({
+  setIncomingCall,
+  handlePickUp,
+  handleDecline,
+  CallerUser,
+}) => {
   const [timer, setTimer] = useState(0);
   const [showVideoCall, setShowVideoCall] = useAtom(showVideoCallAtom);
 
@@ -36,7 +41,7 @@ const Ringing = ({ setIncomingCall, handlePickUp, handleDecline }) => {
 
           <div className="info">
             <h1 className="text-[11px]">incoming video call</h1>
-            <h1 className="text-sm">SomeOne</h1>
+            <h1 className="text-sm">synix</h1>
           </div>
 
           <div className="btns flex gap-x-2">
@@ -56,8 +61,8 @@ const Ringing = ({ setIncomingCall, handlePickUp, handleDecline }) => {
         </div>
       </div>
       <audio
-        // src={call?.picture}
-        // autoPlay
+        src="https://res.cloudinary.com/dkysrpdi6/video/upload/v1713179957/Discord_Original-646169_fo4fqd.mp3"
+        autoPlay
         loop
       ></audio>
     </div>

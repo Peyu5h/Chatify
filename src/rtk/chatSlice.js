@@ -13,6 +13,7 @@ const initialState = {
   messages: [],
   notifications: [],
   files: [],
+  peerIds: {},
 };
 
 export const getConversations = createAsyncThunk(
@@ -161,6 +162,10 @@ export const chatSlice = createSlice({
     // },
     clearFiles: (state) => {
       state.files = [];
+    },
+
+    updatePeerIds: (state, action) => {
+      state.peerIds = action.payload;
     },
   },
   extraReducers: (builder) => {

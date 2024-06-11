@@ -19,7 +19,7 @@ import {
   setActiveConveration,
 } from "../../../rtk/chatSlice";
 
-const ChatPageHeader = ({ callUser }) => {
+const ChatPageHeader = ({ callUser, remotePeerId }) => {
   const { activeConversation, conversation } = useSelector(
     (state) => state.chat
   );
@@ -104,7 +104,7 @@ const ChatPageHeader = ({ callUser }) => {
             <div
               onClick={async () => {
                 await setShowVideoCall(true);
-                await callUser();
+                await callUser(remotePeerId);
               }}
               className="hover:bg-dark_hover_1/50 duration-200 p-1.5 rounded-full commumnity cursor-pointer"
             >

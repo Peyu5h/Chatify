@@ -98,7 +98,6 @@ const io = new Server(server, {
 });
 
 let onlineUsers = [];
-let userPeerIds = {};
 
 io.on("connection", (socket) => {
   logger.info("New Connection");
@@ -119,42 +118,24 @@ io.on("connection", (socket) => {
     io.emit("setup socket", socket.id);
   });
 
-  // Save peer ID
-  socket.on("sendPeerId", (peerId, userId) => {
-    userPeerIds[userId] = peerId;
-    console.log(`Received peer ID ${peerId} for user ${userId}`);
-  });
-
-  // Handle the event where the client requests a peer ID for a user
-  socket.on("getPeerId", (conversationId, callback) => {
-    console.log(
-      `Request to get peer ID for conversation ID: ${conversationId}`
+  // Socket disconnect
+  socket.on("disconnect", () => {
+    const disconnectedUser = onlineUsers.find(
+      (user) => user.socketId === socket.id
     );
-    const user = onlineUsers.find((u) => u.userId === conversationId);
-    if (user) {
-      const peerId = userPeerIds[user.userId];
-      console.log(`Found peer ID ${peerId} for user ${user.userId}`);
-      if (peerId) {
-        callback(peerId);
-      } else {
-        console.log(`No peer ID found for user ${user.userId}`);
-        callback(null);
-      }
-    } else {
-      console.log(`User not found for conversation ID: ${conversationId}`);
-      callback(null);
+    if (disconnectedUser) {
+      onlineUsers = onlineUsers.filter((user) => user.socketId !== socket.id);
+      console.log("User has just disconnected");
+
+      io.emit("user-disconnected", disconnectedUser.userId);
+      io.emit(
+        "get-online-users",
+        onlineUsers.map((user) => user.userId)
+      );
     }
   });
 
-  // Socket disconnect
-  socket.on("disconnect", () => {
-    onlineUsers = onlineUsers.filter((user) => user.socketId !== socket.id);
-    console.log("User has just disconnected");
-
-    io.emit("get-online-users", onlineUsers);
-  });
-
-  // Joins conversation with friend
+  // Joins conversation
   socket.on("join_conversation", (conversation) => {
     socket.join(conversation);
   });

@@ -34,6 +34,10 @@ const userSchema = new mongoose.Schema(
       minlength: [6, "Password must be at least 6 characters long"],
       maxlength: [64, "Password too long!"],
     },
+    peerId: {
+      default: "",
+      type: String,
+    },
   },
   {
     collection: "users",
