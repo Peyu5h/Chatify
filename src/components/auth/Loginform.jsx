@@ -13,9 +13,19 @@ import { FaRegEye, FaRegEyeSlash } from "react-icons/fa";
 const Loginform = () => {
   const { status, error } = useSelector((state) => state.user);
   const [showPass, setShowPass] = useState(false);
+  const [guestLoader, setGuestLoader] = useState(false);
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
+
+  const handleGuestLogin = async () => {
+    setGuestLoader(true);
+    let res = await dispatch(loginUser({ email: "test-user1@gmail.com", password: "12345678" }));
+    setTimeout(() => {
+      if (status == "success") navigate("/");
+    }, 2000);
+    setGuestLoader(false);
+  }
 
   const {
     register,
@@ -29,7 +39,7 @@ const Loginform = () => {
     let res = await dispatch(loginUser({ ...data }));
     setTimeout(() => {
       if (status == "success") navigate("/");
-    }, 2000);
+    }, 1500);
   };
 
   return (
@@ -82,9 +92,21 @@ const Loginform = () => {
             {status == "loading" ? (
               <ScaleLoader color="#fff" width={3} height={18} />
             ) : (
-              "Sign up"
+              "Sign in"
             )}
           </button>
+          <h1 className="text-white text-center my-2">or</h1>
+          <div
+          onClick={handleGuestLogin}
+            className="  text-gray-100 w-full bg-blue_1 p-4 flex rounded-full justify-center font-semibold focus:outline-none hover:bg-blue_2 shadow-lg cursor-pointer transition ease-in duration-300"
+            type="submit"
+          >
+            {guestLoader ? (
+              <ScaleLoader color="#fff" width={3} height={18} />
+            ) : (
+              "Continue as Guest"
+            )}
+          </div>
           <p className="flex flex-row gap-x-2 items-center justify-center text-sm mt-6 text-center dark:text-dark_text_1">
             Dont have an account?
             <Link to="/register">
